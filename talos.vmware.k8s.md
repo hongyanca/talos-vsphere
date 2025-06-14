@@ -127,7 +127,7 @@ Modify `worker-1.yaml`, `worker-2.yaml` and `worker-3.yaml` with worker nodes' h
 
 ```yaml
 # worker-2.yaml
-	network:
+  network:
     hostname: worker-2
     interfaces:
       - interface: eth0
@@ -140,7 +140,7 @@ Modify `worker-1.yaml`, `worker-2.yaml` and `worker-3.yaml` with worker nodes' h
 
 ```yaml
 # worker-3.yaml
-	network:
+  network:
     hostname: worker-3
     interfaces:
       - interface: eth0
@@ -345,7 +345,7 @@ govc device.remove -vm=k8s-worker-3 ethernet-0
 govc vm.network.add -vm k8s-worker-3 -net "LANSeg - 10.1.0.0" -net.adapter e1000e 
 ```
 
-Add an `e1000e` NIC to the VM in vCenter.
+Or you can delete `vmxnet3` NICs and add `e1000e` NICs to the VMs in vCenter.
 
 #### Bootstrap Cluster
 
@@ -395,9 +395,13 @@ talosctl --talosconfig talosconfig bootstrap -e 10.1.1.11 -n 10.1.1.11
 
 > [!IMPORTANT]
 >
-> You only need to bootstrap once.
+> You only need to bootstrap **ONCE**.
 
 Once `STAGE: v Running` appears under `SIDEROLINK n/a`, you should be able to ping `<VIP>`.
+
+> [!NOTE]
+>
+> `STAGE: v Running` may not appear without reboot the node.
 
 ![ma1-node-details](./talos.vmware.k8s.assets/ma1-node-details.webp) 
 
