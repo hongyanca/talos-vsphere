@@ -1,0 +1,16 @@
+- op: add
+  path: /machine/network
+  value:
+    hostname: cp-1
+    interfaces:
+      - interface: eth0
+        dhcp: false
+        addresses:
+          - 10.1.1.11/16
+        routes:
+          - network: 0.0.0.0/0
+            gateway: 10.1.0.1
+        vip:
+          ip: 10.1.1.10
+    nameservers:
+      - 1.1.1.1
