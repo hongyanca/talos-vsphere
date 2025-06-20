@@ -56,9 +56,9 @@ The downloaded `cp.patch.yaml` looks like this:
         ip: <VIP>
 ```
 
-Set a static IP of control plane VM `cp-1` and custome hostname and replace `<VIP>` with IP address `10.1.1.10` in `cp.patch.yaml`
+Set a static IP of control plane VM `cp-1` and custome hostname and replace `<VIP>` with IP address `10.1.1.10` in `cp.patch.yaml`. Also [deploy Cilium](https://www.talos.dev/v1.10/kubernetes-guides/network/deploying-cilium/) without `kube-proxy`.
 
-```
+```yaml
 - op: add
   path: /machine/network
   value:
@@ -75,6 +75,16 @@ Set a static IP of control plane VM `cp-1` and custome hostname and replace `<VI
           ip: 10.1.1.10
     nameservers:
       - 1.1.1.1
+
+- op: add
+  path: /cluster/network/cni
+  value:
+    name: none
+
+- op: add
+  path: /cluster/proxy
+  value:
+    disabled: true
 ```
 
 With the patch in hand, generate machine configs with:
@@ -150,6 +160,10 @@ Modify `worker-1.yaml`, `worker-2.yaml` and `worker-3.yaml` with worker nodes' h
           - network: 0.0.0.0/0
             gateway: 10.1.0.1
 ```
+
+Not sure if `cni` should be patched in `worker-x.yaml`
+
+![worker-yaml-cni](./talos.vmware.k8s.assets/worker-yaml-cni.webp) 
 
 #### Validate the Configuration Files
 
@@ -315,9 +329,21 @@ GOVC_NETWORK set to LANSeg - 10.1.0.0
 Powering on VirtualMachine:vm-22033... OK
 ```
 
+Create a `.env` file
+
+```shell
+export GOVC_URL=https://192.168.0.14
+export GOVC_USERNAME='VCENTER_USERNAME'
+export GOVC_PASSWORD='VCENTER_PASSWORD'
+export GOVC_INSECURE=true
+export GOVC_DATASTORE='datastore1'
+export GOVC_NETWORK='LANSeg - 10.1.0.0'
+```
+
 Replace the NIC type `vmxnet3` with `e1000e` on all nodes.
 
 ```
+source .env
 govc device.ls -vm=k8s-cp-1
 
 ide-200       VirtualIDEController       IDE 0
@@ -442,6 +468,40 @@ cp-2       Ready    control-plane   5m48s   v1.33.1
 worker-1   Ready    worker          5m30s   v1.33.1
 worker-2   Ready    worker          5m34s   v1.33.1
 worker-3   Ready    worker          5m50s   v1.33.1
+```
+
+#### Deploying Cilium CNI - Helm manifests install
+
+https://www.talos.dev/v1.10/kubernetes-guides/network/deploying-cilium/#method-2-helm-manifests-install
+
+https://github.com/cilium/cilium
+
+Add the helm repo for Cilium.
+
+```shell
+helm repo add cilium https://helm.cilium.io/
+helm repo update
+```
+
+```shell
+helm template \
+    cilium \
+    cilium/cilium \
+    --version 1.17.5 \
+    --namespace kube-system \
+    --set ipam.mode=kubernetes \
+    --set kubeProxyReplacement=true \
+    --set securityContext.capabilities.ciliumAgent="{CHOWN,KILL,NET_ADMIN,NET_RAW,IPC_LOCK,SYS_ADMIN,SYS_RESOURCE,DAC_OVERRIDE,FOWNER,SETGID,SETUID}" \
+    --set securityContext.capabilities.cleanCiliumState="{NET_ADMIN,SYS_ADMIN,SYS_RESOURCE}" \
+    --set cgroup.autoMount.enabled=false \
+    --set cgroup.hostRoot=/sys/fs/cgroup \
+    --set k8sServiceHost=localhost \
+    --set k8sServicePort=7445 > cilium.yaml
+
+kubectl apply -f cilium.yaml
+
+# Check if cilium-xxx pods are running
+kubectl get pods -n kube-system
 ```
 
 #### Configure `talos-vmtoolsd`

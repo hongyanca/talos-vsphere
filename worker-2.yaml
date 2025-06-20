@@ -429,6 +429,8 @@ cluster:
     serviceSubnets:
       - 10.96.0.0/12
 
+    cni:
+      name: none
     # # The CNI used.
     # cni:
     #     name: custom # Name of CNI to use.

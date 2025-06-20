@@ -408,6 +408,8 @@ cluster:
     serviceSubnets:
       - 10.96.0.0/12
 
+    cni:
+      name: none
     # # The CNI used.
     # cni:
     #     name: custom # Name of CNI to use.
@@ -494,6 +496,7 @@ cluster:
 
     # # Disable kube-proxy deployment on cluster bootstrap.
     # disabled: false
+    disabled: true
   # Scheduler server specific configuration options.
   scheduler:
     image: registry.k8s.io/kube-scheduler:v1.33.1 # The container image used in the scheduler manifest.
