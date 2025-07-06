@@ -521,3 +521,23 @@ kubectl get pods -n kube-system
 
 https://www.talos.dev/v1.10/talos-guides/install/virtualized-platforms/vmware/#configure-talos-vmtoolsd
 
+#### Upgrading Talos Linux
+
+https://www.talos.dev/v1.10/talos-guides/upgrading-talos/
+
+To upgrade a Talos node, specify the node’s IP address and the installer container image for the version of Talos to upgrade to.
+
+For instance, if your Talos node has the IP address `10.1.1.21` and you want to install the current version, you would enter a command such as:
+
+```text-x-trilium-auto
+talosctl upgrade --nodes 10.1.1.21 \
+  --image ghcr.io/siderolabs/installer:v1.10.5
+```
+
+#### Upgrading Kubernetes
+
+https://www.talos.dev/v1.10/kubernetes-guides/upgrading-kubernetes/
+
+```text-x-trilium-auto
+talosctl --nodes 10.1.1.10 upgrade-k8s --to 1.33.2
+```
