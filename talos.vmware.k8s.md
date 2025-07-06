@@ -26,6 +26,7 @@ This example creates a cluster with 2 control plane nodes and 3 worker nodes. Al
 ```
 cp-1      10.1.1.11
 cp-2      10.1.1.12
+cp-3      10.1.1.13
 worker-1  10.1.1.21
 worker-2  10.1.1.22
 worker-3  10.1.1.23
@@ -120,6 +121,8 @@ Modify `controlplane-2.yaml` to reflect hostname and IP address of `cp-2`:
 
 ![cp2-net-config](./talos.vmware.k8s.assets/cp2-net-config.webp) 
 
+Modify `controlplane-3.yaml` to reflect hostname and IP address of `cp-3`.
+
 Modify `worker-1.yaml`, `worker-2.yaml` and `worker-3.yaml` with worker nodes' hostnames and IPs:
 
 ```yaml
@@ -174,6 +177,9 @@ controlplane-1.yaml is valid for cloud mode
 talosctl validate --config controlplane-2.yaml --mode cloud 
 controlplane-2.yaml is valid for cloud mode
 
+talosctl validate --config controlplane-3.yaml --mode cloud 
+controlplane-3.yaml is valid for cloud mode
+
 talosctl validate --config worker-1.yaml --mode cloud
 worker-1.yaml is valid for cloud mode
 
@@ -193,7 +199,7 @@ worker-3.yaml is valid for cloud mode
 Download `vmware.sh`
 
 ```shell
-curl -fsSL "https://raw.githubusercontent.com/siderolabs/talos/master/website/content/v1.10/talos-guides/install/virtualized-platforms/vmware/vmware.sh" | sed s/latest/v1.10.4/ > vmware.sh
+curl -fsSL "https://raw.githubusercontent.com/siderolabs/talos/master/website/content/v1.10/talos-guides/install/virtualized-platforms/vmware/vmware.sh" | sed s/latest/v1.10.5/ > vmware.sh
 
 chmod +x vmware.sh
 ```
@@ -206,7 +212,7 @@ This script has default variables for things like Talos version and cluster name
 - `govc` makes use of the following environment variables. Set Environment Variables in `vmware.sh`
 - Use array for `CONTROL_PLANE_MACHINE_CONFIG_PATH` and `WORKER_MACHINE_CONFIG_PATH`
 
-```shell
+```bash
 export GOVC_URL=https://192.168.0.14
 export GOVC_USERNAME='VCENTER_USERNAME'
 export GOVC_PASSWORD='VCENTER_PASSWORD'
@@ -215,17 +221,17 @@ export GOVC_DATASTORE='datastore1'
 export GOVC_NETWORK='LANSeg - 10.1.0.0'
 
 CLUSTER_NAME=${CLUSTER_NAME:=k8s}
-TALOS_VERSION=${TALOS_VERSION:=v1.10.4}
+TALOS_VERSION=${TALOS_VERSION:=v1.10.5}
 OVA_PATH=${OVA_PATH:="https://factory.talos.dev/image/903b2da78f99adef03cbbd4df6714563823f63218508800751560d3bc3557e40/${TALOS_VERSION}/vmware-amd64.ova"}
 
-CONTROL_PLANE_COUNT=${CONTROL_PLANE_COUNT:=2}
+CONTROL_PLANE_COUNT=${CONTROL_PLANE_COUNT:=3}
 CONTROL_PLANE_CPU=${CONTROL_PLANE_CPU:=4}
 CONTROL_PLANE_MEM=${CONTROL_PLANE_MEM:=8192}
 CONTROL_PLANE_DISK=${CONTROL_PLANE_DISK:=20G}
 #~#~#~#~#~#~#~#~#~#~#~#~#~#~#~#~#~#~#~#~#~#~#~#~#~#~#~#~#~#~#~#~#~#~#~#~#~#~#~#~#~#~#~#~#~#~#~#~#~#
 # CONTROL_PLANE_MACHINE_CONFIG_PATH=${CONTROL_PLANE_MACHINE_CONFIG_PATH:="./controlplane.yaml"}
 # Two control plane machine configs with static IP and custom hostname
-CONTROL_PLANE_MACHINE_CONFIG_PATHS=("./controlplane-1.yaml" "./controlplane-2.yaml")
+CONTROL_PLANE_MACHINE_CONFIG_PATHS=("./controlplane-1.yaml" "./controlplane-2.yaml" "./controlplane-3.yaml")
 
 WORKER_COUNT=${WORKER_COUNT:=3}
 WORKER_CPU=${WORKER_CPU:=4}
@@ -310,6 +316,9 @@ launching control plane node: k8s-cp-2
 GOVC_NETWORK set to LANSeg - 10.1.0.0
 Powering on VirtualMachine:vm-22030... OK
 
+launching control plane node: k8s-cp-3
+...
+
 launching worker node: k8s-worker-1
 
 [14-06-25 14:53:36] Deploying library item...
@@ -363,6 +372,8 @@ govc device.remove -vm=k8s-cp-1 ethernet-0
 govc vm.network.add -vm k8s-cp-1 -net "LANSeg - 10.1.0.0" -net.adapter e1000e
 govc device.remove -vm=k8s-cp-2 ethernet-0
 govc vm.network.add -vm k8s-cp-2 -net "LANSeg - 10.1.0.0" -net.adapter e1000e
+govc device.remove -vm=k8s-cp-3 ethernet-0
+govc vm.network.add -vm k8s-cp-3 -net "LANSeg - 10.1.0.0" -net.adapter e1000e
 govc device.remove -vm=k8s-worker-1 ethernet-0
 govc vm.network.add -vm k8s-worker-1 -net "LANSeg - 10.1.0.0" -net.adapter e1000e
 govc device.remove -vm=k8s-worker-2 ethernet-0
@@ -446,12 +457,13 @@ mkdir -p ~/.kube
 cp -f ./kubeconfig ~/.kube/config
 
 kubectl get nodes -o wide
-NAME       STATUS   ROLES           AGE     VERSION   INTERNAL-IP   EXTERNAL-IP   OS-IMAGE          KERNEL-VERSION   CONTAINER-RUNTIME
-cp-1       Ready    control-plane   2m27s   v1.33.1   10.1.1.11     <none>        Talos (v1.10.4)   6.12.31-talos    containerd://2.0.5
-cp-2       Ready    control-plane   2m31s   v1.33.1   10.1.1.12     <none>        Talos (v1.10.4)   6.12.31-talos    containerd://2.0.5
-worker-1   Ready    <none>          2m13s   v1.33.1   10.1.1.21     <none>        Talos (v1.10.4)   6.12.31-talos    containerd://2.0.5
-worker-2   Ready    <none>          2m17s   v1.33.1   10.1.1.22     <none>        Talos (v1.10.4)   6.12.31-talos    containerd://2.0.5
-worker-3   Ready    <none>          2m33s   v1.33.1   10.1.1.23     <none>        Talos (v1.10.4)   6.12.31-talos    containerd://2.0.5
+NAME       STATUS   ROLES           AGE   VERSION   INTERNAL-IP   EXTERNAL-IP   OS-IMAGE          KERNEL-VERSION   CONTAINER-RUNTIME
+cp-1       Ready    control-plane   16d   v1.33.2   10.1.1.11     <none>        Talos (v1.10.5)   6.12.35-talos    containerd://2.0.5
+cp-2       Ready    control-plane   16d   v1.33.2   10.1.1.12     <none>        Talos (v1.10.5)   6.12.35-talos    containerd://2.0.5
+cp-3       Ready    control-plane   25m   v1.33.2   10.1.1.13     <none>        Talos (v1.10.5)   6.12.35-talos    containerd://2.0.5
+worker-1   Ready    worker          16d   v1.33.2   10.1.1.21     <none>        Talos (v1.10.5)   6.12.35-talos    containerd://2.0.5
+worker-2   Ready    worker          16d   v1.33.2   10.1.1.22     <none>        Talos (v1.10.5)   6.12.35-talos    containerd://2.0.5
+worker-3   Ready    worker          16d   v1.33.2   10.1.1.23     <none>        Talos (v1.10.5)   6.12.35-talos    containerd://2.0.5
 ```
 
 #### Label the Worker Nodes
@@ -462,12 +474,13 @@ kubectl label nodes worker-2 node-role.kubernetes.io/worker=worker
 kubectl label nodes worker-3 node-role.kubernetes.io/worker=worker
 
 kubectl get nodes
-NAME       STATUS   ROLES           AGE     VERSION
-cp-1       Ready    control-plane   5m44s   v1.33.1
-cp-2       Ready    control-plane   5m48s   v1.33.1
-worker-1   Ready    worker          5m30s   v1.33.1
-worker-2   Ready    worker          5m34s   v1.33.1
-worker-3   Ready    worker          5m50s   v1.33.1
+NAME       STATUS   ROLES           AGE   VERSION
+cp-1       Ready    control-plane   16d   v1.33.2
+cp-2       Ready    control-plane   16d   v1.33.2
+cp-3       Ready    control-plane   25m   v1.33.2
+worker-1   Ready    worker          16d   v1.33.2
+worker-2   Ready    worker          16d   v1.33.2
+worker-3   Ready    worker          16d   v1.33.2
 ```
 
 #### Deploying Cilium CNI - Helm manifests install
