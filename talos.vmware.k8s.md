@@ -535,6 +535,31 @@ talosctl upgrade --nodes 10.1.1.21 \
   --image ghcr.io/siderolabs/installer:v1.10.5
 ```
 
+#### Upgrading a Talos Node by Recreating It
+
+Update `vmware.sh` to use latest Talos Linux version.
+
+```
+TALOS_VERSION=${TALOS_VERSION:=v1.10.5}
+```
+
+```bash
+# Delete old Talos Linux ova
+./vmware.sh delete_ova
+# Upload the latest Talos Linux ova
+./vmware.sh upload_ova
+```
+
+```bash
+source .env
+
+# This example deletes k8s-cp-2 node and recreate it.
+govc vm.destroy k8s-cp-2
+./vmware.sh create
+govc device.remove -vm=k8s-cp-2 ethernet-0
+govc vm.network.add -vm k8s-cp-2 -net "LANSeg - 10.1.0.0" -net.adapter e1000e
+```
+
 #### Upgrading Kubernetes
 
 https://www.talos.dev/v1.10/kubernetes-guides/upgrading-kubernetes/
