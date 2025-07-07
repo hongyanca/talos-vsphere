@@ -490,6 +490,8 @@ https://www.talos.dev/v1.10/kubernetes-guides/network/deploying-cilium/#method-2
 
 https://github.com/cilium/cilium
 
+Cilium helm chart version: https://helm.cilium.io/
+
 Add the helm repo for Cilium.
 
 ```shell
