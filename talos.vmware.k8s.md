@@ -109,7 +109,8 @@ Create config yaml files from `controlplane.yaml` and `worker.yaml`
 
 ```
 cp controlplane.yaml controlplane-1.yaml
-cp controlplane.yaml controlplane-2.yaml 
+cp controlplane.yaml controlplane-2.yaml
+cp controlplane.yaml controlplane-3.yaml
 cp worker.yaml worker-1.yaml
 cp worker.yaml worker-2.yaml
 cp worker.yaml worker-3.yaml
@@ -196,7 +197,7 @@ worker-3.yaml is valid for cloud mode
 
 ### Scripted Install
 
-Download `vmware.sh`
+Download `vmware.sh`: https://github.com/siderolabs/talos/tree/main/website/content/v1.10/talos-guides/install/virtualized-platforms/vmware
 
 ```shell
 curl -fsSL "https://raw.githubusercontent.com/siderolabs/talos/master/website/content/v1.10/talos-guides/install/virtualized-platforms/vmware/vmware.sh" | sed s/latest/v1.10.5/ > vmware.sh
