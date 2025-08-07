@@ -4,4 +4,6 @@ This repository provides guide for setting up a Talos-based Kubernetes cluster o
 
 The main documentation, `talos.vmware.k8s.md`, guides you through the process of preparing your environment and deploying Kubernetes nodes on VMware vSphere. The guide adapts official Talos documentation to cover advanced scenarios such as static networking and custom node hostnames.
 
-For detailed, step-by-step instructions, please refer to the [talos.vmware.k8s.md](./talos.vmware.k8s.md) file.
+For detailed, step-by-step instructions, please refer to the [talos.vmware.k8s.md](./talos.vmware.k8s.md) document.
+
+For Talos and Kubernetes upgrade instructions, please refer to the [upgrade.talos.and.k8s.md](./upgrade.talos.and.k8s.md) document.

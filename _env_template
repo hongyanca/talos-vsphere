@@ -1,0 +1,6 @@
+export GOVC_URL=https://192.168.0.14
+export GOVC_USERNAME='ansible@vsphere.local'
+export GOVC_PASSWORD='xxxxxxxxxxxxxxxxx'
+export GOVC_INSECURE=true
+export GOVC_DATASTORE='datastore1'
+export GOVC_NETWORK='LANSeg - 10.1.0.0'

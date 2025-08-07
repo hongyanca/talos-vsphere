@@ -8,7 +8,6 @@ ehthumbs.db
 Thumbs.db
 
 # Configuration files
-vmware.sh
 talosconfig
 kubeconfig
 
