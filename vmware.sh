@@ -7,19 +7,19 @@ set -e
 
 export GOVC_URL=https://192.168.0.14
 export GOVC_USERNAME='ansible@vsphere.local'
-export GOVC_PASSWORD='xxxxxxxxxxxxxxx'
+export GOVC_PASSWORD='xxxxxxxxxx'
 export GOVC_INSECURE=true
 export GOVC_DATASTORE='datastore1'
 export GOVC_NETWORK='LANSeg - 10.1.0.0'
 
 CLUSTER_NAME=${CLUSTER_NAME:=k8s}
-TALOS_VERSION=${TALOS_VERSION:=v1.10.6}
+TALOS_VERSION=${TALOS_VERSION:=v1.11.1}
 OVA_PATH=${OVA_PATH:="https://factory.talos.dev/image/903b2da78f99adef03cbbd4df6714563823f63218508800751560d3bc3557e40/${TALOS_VERSION}/vmware-amd64.ova"}
 
 CONTROL_PLANE_COUNT=${CONTROL_PLANE_COUNT:=3}
 CONTROL_PLANE_CPU=${CONTROL_PLANE_CPU:=4}
 CONTROL_PLANE_MEM=${CONTROL_PLANE_MEM:=8192}
-CONTROL_PLANE_DISK=${CONTROL_PLANE_DISK:=10G}
+CONTROL_PLANE_DISK=${CONTROL_PLANE_DISK:=11G}
 #~#~#~#~#~#~#~#~#~#~#~#~#~#~#~#~#~#~#~#~#~#~#~#~#~#~#~#~#~#~#~#~#~#~#~#~#~#~#~#~#~#~#~#~#~#~#~#~#~#
 # CONTROL_PLANE_MACHINE_CONFIG_PATH=${CONTROL_PLANE_MACHINE_CONFIG_PATH:="./controlplane.yaml"}
 # Two control plane machine configs with static IP and custom hostname
@@ -28,7 +28,7 @@ CONTROL_PLANE_MACHINE_CONFIG_PATHS=("./controlplane-1.yaml" "./controlplane-2.ya
 WORKER_COUNT=${WORKER_COUNT:=3}
 WORKER_CPU=${WORKER_CPU:=4}
 WORKER_MEM=${WORKER_MEM:=8192}
-WORKER_DISK=${WORKER_DISK:=10G}
+WORKER_DISK=${WORKER_DISK:=11G}
 #~#~#~#~#~#~#~#~#~#~#~#~#~#~#~#~#~#~#~#~#~#~#~#~#~#~#~#~#~#~#~#~#~#~#~#~#~#~#~#~#~#~#~#~#~#~#~#~#~#
 # WORKER_MACHINE_CONFIG_PATH=${WORKER_MACHINE_CONFIG_PATH:="./worker.yaml"}
 # Three worker machine configs with static IP and custom hostname
