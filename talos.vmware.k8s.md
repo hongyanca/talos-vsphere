@@ -1,6 +1,6 @@
-https://www.talos.dev/v1.10/introduction/getting-started/
+https://www.talos.dev/v1.11/introduction/getting-started/
 
-https://www.talos.dev/v1.10/talos-guides/install/virtualized-platforms/vmware/
+https://www.talos.dev/v1.11/talos-guides/install/virtualized-platforms/vmware/
 
 ### Install `talosctl`
 
@@ -200,7 +200,7 @@ worker-3.yaml is valid for cloud mode
 Download `vmware.sh`: https://github.com/siderolabs/talos/tree/main/website/content/v1.10/talos-guides/install/virtualized-platforms/vmware
 
 ```shell
-curl -fsSL "https://raw.githubusercontent.com/siderolabs/talos/master/website/content/v1.10/talos-guides/install/virtualized-platforms/vmware/vmware.sh" | sed s/latest/v1.10.5/ > vmware.sh
+curl -fsSL "https://raw.githubusercontent.com/siderolabs/talos/master/website/content/v1.11/talos-guides/install/virtualized-platforms/vmware/vmware.sh" | sed s/latest/v1.11.1/ > vmware.sh
 
 chmod +x vmware.sh
 ```
@@ -222,13 +222,13 @@ export GOVC_DATASTORE='datastore1'
 export GOVC_NETWORK='LANSeg - 10.1.0.0'
 
 CLUSTER_NAME=${CLUSTER_NAME:=k8s}
-TALOS_VERSION=${TALOS_VERSION:=v1.10.5}
+TALOS_VERSION=${TALOS_VERSION:=v1.11.1}
 OVA_PATH=${OVA_PATH:="https://factory.talos.dev/image/903b2da78f99adef03cbbd4df6714563823f63218508800751560d3bc3557e40/${TALOS_VERSION}/vmware-amd64.ova"}
 
 CONTROL_PLANE_COUNT=${CONTROL_PLANE_COUNT:=3}
 CONTROL_PLANE_CPU=${CONTROL_PLANE_CPU:=4}
 CONTROL_PLANE_MEM=${CONTROL_PLANE_MEM:=8192}
-CONTROL_PLANE_DISK=${CONTROL_PLANE_DISK:=20G}
+CONTROL_PLANE_DISK=${CONTROL_PLANE_DISK:=11G}
 #~#~#~#~#~#~#~#~#~#~#~#~#~#~#~#~#~#~#~#~#~#~#~#~#~#~#~#~#~#~#~#~#~#~#~#~#~#~#~#~#~#~#~#~#~#~#~#~#~#
 # CONTROL_PLANE_MACHINE_CONFIG_PATH=${CONTROL_PLANE_MACHINE_CONFIG_PATH:="./controlplane.yaml"}
 # Two control plane machine configs with static IP and custom hostname
@@ -237,7 +237,7 @@ CONTROL_PLANE_MACHINE_CONFIG_PATHS=("./controlplane-1.yaml" "./controlplane-2.ya
 WORKER_COUNT=${WORKER_COUNT:=3}
 WORKER_CPU=${WORKER_CPU:=4}
 WORKER_MEM=${WORKER_MEM:=8192}
-WORKER_DISK=${WORKER_DISK:=30G}
+WORKER_DISK=${WORKER_DISK:=11G}
 #~#~#~#~#~#~#~#~#~#~#~#~#~#~#~#~#~#~#~#~#~#~#~#~#~#~#~#~#~#~#~#~#~#~#~#~#~#~#~#~#~#~#~#~#~#~#~#~#~#
 # WORKER_MACHINE_CONFIG_PATH=${WORKER_MACHINE_CONFIG_PATH:="./worker.yaml"}
 # Three worker machine configs with static IP and custom hostname
@@ -366,7 +366,7 @@ pointing-700  VirtualPointingDevice      Pointing device; Device
 video-500     VirtualMachineVideoCard    Video card
 vmci-12000    VirtualMachineVMCIDevice   Device on the virtual machine PCI bus that provides support for the virtual machine communication interface
 pvscsi-1000   ParaVirtualSCSIController  VMware paravirtual SCSI
-disk-1000-0   VirtualDisk                20,971,520 KB
+disk-1000-0   VirtualDisk                11,534,336 KB
 ethernet-0    VirtualVmxnet3             LANSeg - 10.1.0.0
 
 govc device.remove -vm=k8s-cp-1 ethernet-0
@@ -459,12 +459,12 @@ cp -f ./kubeconfig ~/.kube/config
 
 kubectl get nodes -o wide
 NAME       STATUS   ROLES           AGE   VERSION   INTERNAL-IP   EXTERNAL-IP   OS-IMAGE          KERNEL-VERSION   CONTAINER-RUNTIME
-cp-1       Ready    control-plane   16d   v1.33.2   10.1.1.11     <none>        Talos (v1.10.5)   6.12.35-talos    containerd://2.0.5
-cp-2       Ready    control-plane   16d   v1.33.2   10.1.1.12     <none>        Talos (v1.10.5)   6.12.35-talos    containerd://2.0.5
-cp-3       Ready    control-plane   25m   v1.33.2   10.1.1.13     <none>        Talos (v1.10.5)   6.12.35-talos    containerd://2.0.5
-worker-1   Ready    worker          16d   v1.33.2   10.1.1.21     <none>        Talos (v1.10.5)   6.12.35-talos    containerd://2.0.5
-worker-2   Ready    worker          16d   v1.33.2   10.1.1.22     <none>        Talos (v1.10.5)   6.12.35-talos    containerd://2.0.5
-worker-3   Ready    worker          16d   v1.33.2   10.1.1.23     <none>        Talos (v1.10.5)   6.12.35-talos    containerd://2.0.5
+cp-1       Ready    control-plane   80d   v1.34.0   10.1.1.11     <none>        Talos (v1.11.1)   6.12.45-talos    containerd://2.1.4
+cp-2       Ready    control-plane   80d   v1.34.0   10.1.1.12     <none>        Talos (v1.11.1)   6.12.45-talos    containerd://2.1.4
+cp-3       Ready    control-plane   64d   v1.34.0   10.1.1.13     <none>        Talos (v1.11.1)   6.12.45-talos    containerd://2.1.4
+worker-1   Ready    worker          80d   v1.34.0   10.1.1.21     <none>        Talos (v1.11.1)   6.12.45-talos    containerd://2.1.4
+worker-2   Ready    worker          80d   v1.34.0   10.1.1.22     <none>        Talos (v1.11.1)   6.12.45-talos    containerd://2.1.4
+worker-3   Ready    worker          80d   v1.34.0   10.1.1.23     <none>        Talos (v1.11.1)   6.12.45-talos    containerd://2.1.4
 ```
 
 #### Label the Worker Nodes
@@ -476,12 +476,12 @@ kubectl label nodes worker-3 node-role.kubernetes.io/worker=worker
 
 kubectl get nodes
 NAME       STATUS   ROLES           AGE   VERSION
-cp-1       Ready    control-plane   16d   v1.33.2
-cp-2       Ready    control-plane   16d   v1.33.2
-cp-3       Ready    control-plane   25m   v1.33.2
-worker-1   Ready    worker          16d   v1.33.2
-worker-2   Ready    worker          16d   v1.33.2
-worker-3   Ready    worker          16d   v1.33.2
+cp-1       Ready    control-plane   80d   v1.34.0
+cp-2       Ready    control-plane   80d   v1.34.0
+cp-3       Ready    control-plane   64d   v1.34.0
+worker-1   Ready    worker          80d   v1.34.0
+worker-2   Ready    worker          80d   v1.34.0
+worker-3   Ready    worker          80d   v1.34.0
 ```
 
 #### Deploying Cilium CNI - Helm manifests install
@@ -522,11 +522,11 @@ kubectl get pods -n kube-system
 
 #### Configure `talos-vmtoolsd`
 
-https://www.talos.dev/v1.10/talos-guides/install/virtualized-platforms/vmware/#configure-talos-vmtoolsd
+https://www.talos.dev/v1.11/talos-guides/install/virtualized-platforms/vmware/#configure-talos-vmtoolsd
 
 #### Upgrading Talos Linux
 
-https://www.talos.dev/v1.10/talos-guides/upgrading-talos/
+https://www.talos.dev/v1.11/talos-guides/upgrading-talos/
 
 To upgrade a Talos node, specify the node’s IP address and the installer container image for the version of Talos to upgrade to.
 
@@ -534,38 +534,9 @@ For instance, if your Talos node has the IP address `10.1.1.21` and you want to 
 
 ```text-x-trilium-auto
 talosctl upgrade --nodes 10.1.1.21 \
-  --image ghcr.io/siderolabs/installer:v1.10.5
+  --image ghcr.io/siderolabs/installer:v1.11.1
 ```
 
 #### Upgrading a Talos Node by Recreating It
 
-Update `vmware.sh` to use latest Talos Linux version.
-
-```
-TALOS_VERSION=${TALOS_VERSION:=v1.10.5}
-```
-
-```bash
-# Delete old Talos Linux ova
-./vmware.sh delete_ova
-# Upload the latest Talos Linux ova
-./vmware.sh upload_ova
-```
-
-```bash
-source .env
-
-# This example deletes k8s-cp-2 node and recreate it.
-govc vm.destroy k8s-cp-2
-./vmware.sh create
-govc device.remove -vm=k8s-cp-2 ethernet-0
-govc vm.network.add -vm k8s-cp-2 -net "LANSeg - 10.1.0.0" -net.adapter e1000e
-```
-
-#### Upgrading Kubernetes
-
-https://www.talos.dev/v1.10/kubernetes-guides/upgrading-kubernetes/
-
-```text-x-trilium-auto
-talosctl --nodes 10.1.1.10 upgrade-k8s --to 1.33.2
-```
+For Talos and Kubernetes upgrade instructions, please refer to the [upgrade.talos.and.k8s.md](./upgrade.talos.and.k8s.md) document.

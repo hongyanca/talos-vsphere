@@ -19,8 +19,8 @@ Change Talos version and k8s version in `controlplane-x.yaml`, `worker-x.yaml`, 
 
 ```bash
 # Replace Talos version from 1.11.x to 1.11.2
-sed -i 's/:v1\.11\.[0-9]\+/:v1.11.1/g' controlplane*.yaml worker*.yaml
-sed -i 's/v1\.11\.[0-9]\+/v1.11.1/g' vmware.sh vmware-deploy-node.sh
+sed -i 's/:v1\.11\.[0-9]\+/:v1.11.2/g' controlplane*.yaml worker*.yaml
+sed -i 's/v1\.11\.[0-9]\+/v1.11.2/g' vmware.sh vmware-deploy-node.sh
 
 cat vmware-deploy-node.sh | grep TALOS_VERSION=
 
