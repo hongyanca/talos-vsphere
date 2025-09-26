@@ -444,7 +444,7 @@ Once `STAGE: v Running` appears under `SIDEROLINK n/a`, you should be able to pi
 >
 > `STAGE: v Running` may not appear without reboot the node.
 
-![ma1-node-details](./talos.vmware.k8s.assets/ma1-node-details.webp) 
+![cp1-node-details](./talos.vmware.k8s.assets/cp1-node-details.webp) 
 
 #### Retrieve the `kubeconfig`
 
@@ -462,12 +462,12 @@ cp -f ./kubeconfig ~/.kube/config
 
 kubectl get nodes -o wide
 NAME       STATUS   ROLES           AGE   VERSION   INTERNAL-IP   EXTERNAL-IP   OS-IMAGE          KERNEL-VERSION   CONTAINER-RUNTIME
-cp-1       Ready    control-plane   80d   v1.34.0   10.1.1.11     <none>        Talos (v1.11.2)   6.12.45-talos    containerd://2.1.4
-cp-2       Ready    control-plane   80d   v1.34.0   10.1.1.12     <none>        Talos (v1.11.2)   6.12.45-talos    containerd://2.1.4
-cp-3       Ready    control-plane   64d   v1.34.0   10.1.1.13     <none>        Talos (v1.11.2)   6.12.45-talos    containerd://2.1.4
-worker-1   Ready    worker          80d   v1.34.0   10.1.1.21     <none>        Talos (v1.11.2)   6.12.45-talos    containerd://2.1.4
-worker-2   Ready    worker          80d   v1.34.0   10.1.1.22     <none>        Talos (v1.11.2)   6.12.45-talos    containerd://2.1.4
-worker-3   Ready    worker          80d   v1.34.0   10.1.1.23     <none>        Talos (v1.11.2)   6.12.45-talos    containerd://2.1.4
+cp-1       Ready    control-plane   10m   v1.34.1   10.1.1.11     <none>        Talos (v1.11.2)   6.12.48-talos    containerd://2.1.4
+cp-2       Ready    control-plane   10m   v1.34.1   10.1.1.12     <none>        Talos (v1.11.2)   6.12.48-talos    containerd://2.1.4
+cp-3       Ready    control-plane   10m   v1.34.1   10.1.1.13     <none>        Talos (v1.11.2)   6.12.48-talos    containerd://2.1.4
+worker-1   Ready    worker          10m   v1.34.1   10.1.1.21     <none>        Talos (v1.11.2)   6.12.48-talos    containerd://2.1.4
+worker-2   Ready    worker          10m   v1.34.1   10.1.1.22     <none>        Talos (v1.11.2)   6.12.48-talos    containerd://2.1.4
+worker-3   Ready    worker          10m   v1.34.1   10.1.1.23     <none>        Talos (v1.11.2)   6.12.48-talos    containerd://2.1.4
 ```
 
 #### Label the Worker Nodes
@@ -479,17 +479,17 @@ kubectl label nodes worker-3 node-role.kubernetes.io/worker=worker
 
 kubectl get nodes
 NAME       STATUS   ROLES           AGE   VERSION
-cp-1       Ready    control-plane   80d   v1.34.0
-cp-2       Ready    control-plane   80d   v1.34.0
-cp-3       Ready    control-plane   64d   v1.34.0
-worker-1   Ready    worker          80d   v1.34.0
-worker-2   Ready    worker          80d   v1.34.0
-worker-3   Ready    worker          80d   v1.34.0
+cp-1       Ready    control-plane   80d   v1.34.1
+cp-2       Ready    control-plane   80d   v1.34.1
+cp-3       Ready    control-plane   64d   v1.34.1
+worker-1   Ready    worker          80d   v1.34.1
+worker-2   Ready    worker          80d   v1.34.1
+worker-3   Ready    worker          80d   v1.34.1
 ```
 
 #### Deploying Cilium CNI - Helm manifests install
 
-https://www.talos.dev/v1.10/kubernetes-guides/network/deploying-cilium/#method-2-helm-manifests-install
+https://www.talos.dev/v1.11/kubernetes-guides/network/deploying-cilium/#method-2-helm-manifests-install
 
 https://github.com/cilium/cilium
 
@@ -502,11 +502,13 @@ helm repo add cilium https://helm.cilium.io/
 helm repo update
 ```
 
+Check the lastest release of cilium at: https://github.com/cilium/cilium
+
 ```shell
 helm template \
     cilium \
     cilium/cilium \
-    --version 1.17.5 \
+    --version 1.18.2 \
     --namespace kube-system \
     --set ipam.mode=kubernetes \
     --set kubeProxyReplacement=true \
