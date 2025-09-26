@@ -5,15 +5,15 @@ set -e
 ## The following commented environment variables should be set
 ## before running this script
 
-export GOVC_URL=https://192.168.0.14
-export GOVC_USERNAME='ansible@vsphere.local'
-export GOVC_PASSWORD='xxxxxxxxxx'
-export GOVC_INSECURE=true
-export GOVC_DATASTORE='datastore1'
-export GOVC_NETWORK='LANSeg - 10.1.0.0'
+# export GOVC_URL=https://192.168.0.14
+# export GOVC_USERNAME='ansible@vsphere.local'
+# export GOVC_PASSWORD='xxxxxxxxxx'
+# export GOVC_INSECURE=true
+# export GOVC_DATASTORE='datastore1'
+# export GOVC_NETWORK='LANSeg - 10.1.0.0'
 
 CLUSTER_NAME=${CLUSTER_NAME:=k8s}
-TALOS_VERSION=${TALOS_VERSION:=v1.11.1}
+TALOS_VERSION=${TALOS_VERSION:=v1.11.2}
 OVA_PATH=${OVA_PATH:="https://factory.talos.dev/image/903b2da78f99adef03cbbd4df6714563823f63218508800751560d3bc3557e40/${TALOS_VERSION}/vmware-amd64.ova"}
 
 CONTROL_PLANE_COUNT=${CONTROL_PLANE_COUNT:=3}

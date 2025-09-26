@@ -32,7 +32,7 @@ worker-2  10.1.1.22
 worker-3  10.1.1.23
 ```
 
-Install `govc` cli to `/usr/local/bin/talosctl`. https://github.com/vmware/govmomi/tree/main/govc#installation
+Install `govc` cli to `/usr/local/bin/`. https://github.com/vmware/govmomi/tree/main/govc#installation
 
 ```shell
 curl -L -o - "https://github.com/vmware/govmomi/releases/latest/download/govc_$(uname -s)_$(uname -m).tar.gz" | tar -C /usr/local/bin -xvzf - govc
@@ -41,7 +41,7 @@ curl -L -o - "https://github.com/vmware/govmomi/releases/latest/download/govc_$(
 First, download `cp.patch.yaml` to your local machine and edit the VIP to match your chosen IP. You can do this by issuing:
 
 ```shell
-curl -fsSLO https://raw.githubusercontent.com/siderolabs/talos/master/website/content/v1.10/talos-guides/install/virtualized-platforms/vmware/cp.patch.yaml
+curl -fsSLO https://raw.githubusercontent.com/siderolabs/talos/master/website/content/v1.11/talos-guides/install/virtualized-platforms/vmware/cp.patch.yaml
 ```
 
 The downloaded `cp.patch.yaml` looks like this:
@@ -200,7 +200,7 @@ worker-3.yaml is valid for cloud mode
 Download `vmware.sh`: https://github.com/siderolabs/talos/tree/main/website/content/v1.10/talos-guides/install/virtualized-platforms/vmware
 
 ```shell
-curl -fsSL "https://raw.githubusercontent.com/siderolabs/talos/master/website/content/v1.11/talos-guides/install/virtualized-platforms/vmware/vmware.sh" | sed s/latest/v1.11.1/ > vmware.sh
+curl -fsSL "https://raw.githubusercontent.com/siderolabs/talos/master/website/content/v1.11/talos-guides/install/virtualized-platforms/vmware/vmware.sh" | sed s/latest/v1.11.2/ > vmware.sh
 
 chmod +x vmware.sh
 ```
@@ -222,7 +222,7 @@ export GOVC_DATASTORE='datastore1'
 export GOVC_NETWORK='LANSeg - 10.1.0.0'
 
 CLUSTER_NAME=${CLUSTER_NAME:=k8s}
-TALOS_VERSION=${TALOS_VERSION:=v1.11.1}
+TALOS_VERSION=${TALOS_VERSION:=v1.11.2}
 OVA_PATH=${OVA_PATH:="https://factory.talos.dev/image/903b2da78f99adef03cbbd4df6714563823f63218508800751560d3bc3557e40/${TALOS_VERSION}/vmware-amd64.ova"}
 
 CONTROL_PLANE_COUNT=${CONTROL_PLANE_COUNT:=3}
@@ -307,36 +307,39 @@ With the OVA uploaded to the **content library**, you can create a cluster with 
 
 launching control plane node: k8s-cp-1
 
-[14-06-25 14:52:31] Deploying library item...
+[26-09-25 14:29:43] Deploying library item...
 GOVC_NETWORK set to LANSeg - 10.1.0.0
-Powering on VirtualMachine:vm-22029... OK
+Powering on VirtualMachine:vm-24040... OK
 
 launching control plane node: k8s-cp-2
 
-[14-06-25 14:53:06] Deploying library item...
+[26-09-25 14:30:19] Deploying library item...
 GOVC_NETWORK set to LANSeg - 10.1.0.0
-Powering on VirtualMachine:vm-22030... OK
+Powering on VirtualMachine:vm-24041... OK
 
 launching control plane node: k8s-cp-3
-...
+
+[26-09-25 14:30:40] Deploying library item...
+GOVC_NETWORK set to LANSeg - 10.1.0.0
+Powering on VirtualMachine:vm-24042... OK
 
 launching worker node: k8s-worker-1
 
-[14-06-25 14:53:36] Deploying library item...
+[26-09-25 14:31:01] Deploying library item...
 GOVC_NETWORK set to LANSeg - 10.1.0.0
-Powering on VirtualMachine:vm-22031... OK
+Powering on VirtualMachine:vm-24043... OK
 
 launching worker node: k8s-worker-2
 
-[14-06-25 14:53:56] Deploying library item...
+[26-09-25 14:31:21] Deploying library item...
 GOVC_NETWORK set to LANSeg - 10.1.0.0
-Powering on VirtualMachine:vm-22032... OK
+Powering on VirtualMachine:vm-24044... OK
 
 launching worker node: k8s-worker-3
 
-[14-06-25 14:54:15] Deploying library item...
+[26-09-25 14:31:41] Deploying library item...
 GOVC_NETWORK set to LANSeg - 10.1.0.0
-Powering on VirtualMachine:vm-22033... OK
+Powering on VirtualMachine:vm-24045... OK
 ```
 
 Create a `.env` file
@@ -459,12 +462,12 @@ cp -f ./kubeconfig ~/.kube/config
 
 kubectl get nodes -o wide
 NAME       STATUS   ROLES           AGE   VERSION   INTERNAL-IP   EXTERNAL-IP   OS-IMAGE          KERNEL-VERSION   CONTAINER-RUNTIME
-cp-1       Ready    control-plane   80d   v1.34.0   10.1.1.11     <none>        Talos (v1.11.1)   6.12.45-talos    containerd://2.1.4
-cp-2       Ready    control-plane   80d   v1.34.0   10.1.1.12     <none>        Talos (v1.11.1)   6.12.45-talos    containerd://2.1.4
-cp-3       Ready    control-plane   64d   v1.34.0   10.1.1.13     <none>        Talos (v1.11.1)   6.12.45-talos    containerd://2.1.4
-worker-1   Ready    worker          80d   v1.34.0   10.1.1.21     <none>        Talos (v1.11.1)   6.12.45-talos    containerd://2.1.4
-worker-2   Ready    worker          80d   v1.34.0   10.1.1.22     <none>        Talos (v1.11.1)   6.12.45-talos    containerd://2.1.4
-worker-3   Ready    worker          80d   v1.34.0   10.1.1.23     <none>        Talos (v1.11.1)   6.12.45-talos    containerd://2.1.4
+cp-1       Ready    control-plane   80d   v1.34.0   10.1.1.11     <none>        Talos (v1.11.2)   6.12.45-talos    containerd://2.1.4
+cp-2       Ready    control-plane   80d   v1.34.0   10.1.1.12     <none>        Talos (v1.11.2)   6.12.45-talos    containerd://2.1.4
+cp-3       Ready    control-plane   64d   v1.34.0   10.1.1.13     <none>        Talos (v1.11.2)   6.12.45-talos    containerd://2.1.4
+worker-1   Ready    worker          80d   v1.34.0   10.1.1.21     <none>        Talos (v1.11.2)   6.12.45-talos    containerd://2.1.4
+worker-2   Ready    worker          80d   v1.34.0   10.1.1.22     <none>        Talos (v1.11.2)   6.12.45-talos    containerd://2.1.4
+worker-3   Ready    worker          80d   v1.34.0   10.1.1.23     <none>        Talos (v1.11.2)   6.12.45-talos    containerd://2.1.4
 ```
 
 #### Label the Worker Nodes
@@ -534,7 +537,7 @@ For instance, if your Talos node has the IP address `10.1.1.21` and you want to 
 
 ```text-x-trilium-auto
 talosctl upgrade --nodes 10.1.1.21 \
-  --image ghcr.io/siderolabs/installer:v1.11.1
+  --image ghcr.io/siderolabs/installer:v1.11.2
 ```
 
 #### Upgrading a Talos Node by Recreating It
