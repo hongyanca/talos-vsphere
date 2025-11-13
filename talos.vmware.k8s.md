@@ -1,6 +1,6 @@
-https://www.talos.dev/v1.11/introduction/getting-started/
+https://docs.siderolabs.com/talos/v1.11/getting-started/getting-started
 
-https://www.talos.dev/v1.11/talos-guides/install/virtualized-platforms/vmware/
+https://docs.siderolabs.com/talos/v1.11/platform-specific-installations/virtualized-platforms/vmware
 
 ### Install `talosctl`
 
@@ -489,7 +489,7 @@ worker-3   Ready    worker          80d   v1.34.1
 
 #### Deploying Cilium CNI - Helm manifests install
 
-https://www.talos.dev/v1.11/kubernetes-guides/network/deploying-cilium/#method-2-helm-manifests-install
+https://docs.siderolabs.com/kubernetes-guides/cni/deploying-cilium#method-2-helm-manifests-install
 
 https://github.com/cilium/cilium
 
@@ -508,7 +508,7 @@ Check the lastest release of cilium at: https://github.com/cilium/cilium
 helm template \
     cilium \
     cilium/cilium \
-    --version 1.18.2 \
+    --version 1.18.4 \
     --namespace kube-system \
     --set ipam.mode=kubernetes \
     --set kubeProxyReplacement=true \
@@ -527,19 +527,19 @@ kubectl get pods -n kube-system
 
 #### Configure `talos-vmtoolsd`
 
-https://www.talos.dev/v1.11/talos-guides/install/virtualized-platforms/vmware/#configure-talos-vmtoolsd
+https://docs.siderolabs.com/talos/v1.11/platform-specific-installations/virtualized-platforms/vmware#configure-talos-vmtoolsd
 
 #### Upgrading Talos Linux
 
-https://www.talos.dev/v1.11/talos-guides/upgrading-talos/
+https://docs.siderolabs.com/talos/v1.11/configure-your-talos-cluster/lifecycle-management/upgrading-talos
 
 To upgrade a Talos node, specify the node’s IP address and the installer container image for the version of Talos to upgrade to.
 
 For instance, if your Talos node has the IP address `10.1.1.21` and you want to install the current version, you would enter a command such as:
 
-```text-x-trilium-auto
+```bash
 talosctl upgrade --nodes 10.1.1.21 \
-  --image ghcr.io/siderolabs/installer:v1.11.2
+  --image ghcr.io/siderolabs/installer:v1.11.5
 ```
 
 #### Upgrading a Talos Node by Recreating It
