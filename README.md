@@ -7,3 +7,31 @@ The main documentation, `talos.vmware.k8s.md`, guides you through the process of
 For detailed, step-by-step instructions, please refer to the [talos.vmware.k8s.md](./talos.vmware.k8s.md) document.
 
 For Talos and Kubernetes upgrade instructions, please refer to the [upgrade.talos.and.k8s.md](./upgrade.talos.and.k8s.md) document.
+
+---
+
+### Renew `kubectl` client certificate.
+
+Check `kubectl` client certificate expiration date:
+
+```bash
+cat ~/.kube/config | grep client-certificate-data | cut -f2 -d : | tr -d ' ' | base64 -d | openssl x509 -text -out - | grep "Not After"
+```
+
+Backup `~/.kube/config`
+
+```bash
+cp ~/.kube/config ~/.kube/config.backup
+```
+
+Generate a new client certificate
+
+```bash
+talosctl kubeconfig ~/.kube/config --force
+```
+
+Check the client cert expiration date again:
+
+```bash
+cat ~/.kube/config | grep client-certificate-data | cut -f2 -d : | tr -d ' ' | base64 -d | openssl x509 -text -out - | grep "Not After"
+```
