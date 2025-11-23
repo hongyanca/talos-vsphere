@@ -10,6 +10,12 @@ For Talos and Kubernetes upgrade instructions, please refer to the [upgrade.talo
 
 ---
 
+### Authentication
+
+Save `kubeconfig` as `~/.kube/config` and `talosconfig` as `~/.talos/config`
+
+---
+
 ### Renew `kubectl` client certificate.
 
 Check `kubectl` client certificate expiration date:
