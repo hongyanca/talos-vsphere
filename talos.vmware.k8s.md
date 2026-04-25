@@ -1,6 +1,6 @@
-https://www.talos.dev/v1.11/introduction/getting-started/
+https://docs.siderolabs.com/talos/v1.12/getting-started/getting-started
 
-https://www.talos.dev/v1.11/talos-guides/install/virtualized-platforms/vmware/
+https://docs.siderolabs.com/talos/v1.12/platform-specific-installations/virtualized-platforms/vmware
 
 ### Install `talosctl`
 
@@ -41,7 +41,7 @@ curl -L -o - "https://github.com/vmware/govmomi/releases/latest/download/govc_$(
 First, download `cp.patch.yaml` to your local machine and edit the VIP to match your chosen IP. You can do this by issuing:
 
 ```shell
-curl -fsSLO https://raw.githubusercontent.com/siderolabs/talos/master/website/content/v1.11/talos-guides/install/virtualized-platforms/vmware/cp.patch.yaml
+curl -fsSLO https://raw.githubusercontent.com/siderolabs/docs/main/static/talos/v1.12/vmware/cp.patch.yaml
 ```
 
 The downloaded `cp.patch.yaml` looks like this:
@@ -57,7 +57,7 @@ The downloaded `cp.patch.yaml` looks like this:
         ip: <VIP>
 ```
 
-Set a static IP of control plane VM `cp-1` and custome hostname and replace `<VIP>` with IP address `10.1.1.10` in `cp.patch.yaml`. Also [deploy Cilium](https://www.talos.dev/v1.10/kubernetes-guides/network/deploying-cilium/) without `kube-proxy`.
+Set a static IP of control plane VM `cp-1` and custome hostname and replace `<VIP>` with IP address `10.1.1.10` in `cp.patch.yaml`. Also [deploy Cilium](https://docs.siderolabs.com/kubernetes-guides/cni/deploying-cilium) without `kube-proxy`.
 
 ```yaml
 - op: add
@@ -197,10 +197,12 @@ worker-3.yaml is valid for cloud mode
 
 ### Scripted Install
 
-Download `vmware.sh`: https://github.com/siderolabs/talos/tree/main/website/content/v1.10/talos-guides/install/virtualized-platforms/vmware
+https://docs.siderolabs.com/talos/v1.12/platform-specific-installations/virtualized-platforms/vmware#scripted-install
+
+Download `vmware.sh`:
 
 ```shell
-curl -fsSL "https://raw.githubusercontent.com/siderolabs/talos/master/website/content/v1.11/talos-guides/install/virtualized-platforms/vmware/vmware.sh" | sed s/latest/v1.11.2/ > vmware.sh
+curl -fsSL "https://raw.githubusercontent.com/siderolabs/docs/main/static/talos/v1.12/vmware/vmware.sh" | sed s/latest/v1.12.7/ > vmware.sh
 
 chmod +x vmware.sh
 ```
@@ -222,7 +224,7 @@ export GOVC_DATASTORE='datastore1'
 export GOVC_NETWORK='LANSeg - 10.1.0.0'
 
 CLUSTER_NAME=${CLUSTER_NAME:=k8s}
-TALOS_VERSION=${TALOS_VERSION:=v1.11.2}
+TALOS_VERSION=${TALOS_VERSION:=v1.12.7}
 OVA_PATH=${OVA_PATH:="https://factory.talos.dev/image/903b2da78f99adef03cbbd4df6714563823f63218508800751560d3bc3557e40/${TALOS_VERSION}/vmware-amd64.ova"}
 
 CONTROL_PLANE_COUNT=${CONTROL_PLANE_COUNT:=3}
@@ -461,13 +463,13 @@ mkdir -p ~/.kube
 cp -f ./kubeconfig ~/.kube/config
 
 kubectl get nodes -o wide
-NAME       STATUS   ROLES           AGE   VERSION   INTERNAL-IP   EXTERNAL-IP   OS-IMAGE          KERNEL-VERSION   CONTAINER-RUNTIME
-cp-1       Ready    control-plane   10m   v1.34.1   10.1.1.11     <none>        Talos (v1.11.2)   6.12.48-talos    containerd://2.1.4
-cp-2       Ready    control-plane   10m   v1.34.1   10.1.1.12     <none>        Talos (v1.11.2)   6.12.48-talos    containerd://2.1.4
-cp-3       Ready    control-plane   10m   v1.34.1   10.1.1.13     <none>        Talos (v1.11.2)   6.12.48-talos    containerd://2.1.4
-worker-1   Ready    worker          10m   v1.34.1   10.1.1.21     <none>        Talos (v1.11.2)   6.12.48-talos    containerd://2.1.4
-worker-2   Ready    worker          10m   v1.34.1   10.1.1.22     <none>        Talos (v1.11.2)   6.12.48-talos    containerd://2.1.4
-worker-3   Ready    worker          10m   v1.34.1   10.1.1.23     <none>        Talos (v1.11.2)   6.12.48-talos    containerd://2.1.4
+NAME       STATUS   ROLES           AGE    VERSION   INTERNAL-IP   EXTERNAL-IP   OS-IMAGE          KERNEL-VERSION   CONTAINER-RUNTIME
+cp-1       Ready    control-plane   210d   v1.35.4   10.1.1.11     <none>        Talos (v1.12.7)   6.18.24-talos    containerd://2.1.7
+cp-2       Ready    control-plane   210d   v1.35.4   10.1.1.12     <none>        Talos (v1.12.7)   6.18.24-talos    containerd://2.1.7
+cp-3       Ready    control-plane   210d   v1.35.4   10.1.1.13     <none>        Talos (v1.12.7)   6.18.24-talos    containerd://2.1.7
+worker-1   Ready    worker          210d   v1.35.4   10.1.1.21     <none>        Talos (v1.12.7)   6.18.24-talos    containerd://2.1.7
+worker-2   Ready    worker          210d   v1.35.4   10.1.1.22     <none>        Talos (v1.12.7)   6.18.24-talos    containerd://2.1.7
+worker-3   Ready    worker          210d   v1.35.4   10.1.1.23     <none>        Talos (v1.12.7)   6.18.24-talos    containerd://2.1.7
 ```
 
 #### Label the Worker Nodes
@@ -478,20 +480,18 @@ kubectl label nodes worker-2 node-role.kubernetes.io/worker=worker
 kubectl label nodes worker-3 node-role.kubernetes.io/worker=worker
 
 kubectl get nodes
-NAME       STATUS   ROLES           AGE   VERSION
-cp-1       Ready    control-plane   80d   v1.34.1
-cp-2       Ready    control-plane   80d   v1.34.1
-cp-3       Ready    control-plane   64d   v1.34.1
-worker-1   Ready    worker          80d   v1.34.1
-worker-2   Ready    worker          80d   v1.34.1
-worker-3   Ready    worker          80d   v1.34.1
+NAME       STATUS   ROLES           AGE    VERSION
+cp-1       Ready    control-plane   210d   v1.35.4
+cp-2       Ready    control-plane   210d   v1.35.4
+cp-3       Ready    control-plane   210d   v1.35.4
+worker-1   Ready    worker          210d   v1.35.4
+worker-2   Ready    worker          210d   v1.35.4
+worker-3   Ready    worker          210d   v1.35.4
 ```
 
 #### Deploying Cilium CNI - Helm manifests install
 
-https://www.talos.dev/v1.11/kubernetes-guides/network/deploying-cilium/#method-2-helm-manifests-install
-
-https://github.com/cilium/cilium
+https://docs.siderolabs.com/kubernetes-guides/cni/deploying-cilium#method-2-helm-manifests-install
 
 Cilium helm chart version: https://helm.cilium.io/
 
@@ -508,7 +508,7 @@ Check the lastest release of cilium at: https://github.com/cilium/cilium
 helm template \
     cilium \
     cilium/cilium \
-    --version 1.18.2 \
+    --version 1.19.3 \
     --namespace kube-system \
     --set ipam.mode=kubernetes \
     --set kubeProxyReplacement=true \
@@ -527,19 +527,19 @@ kubectl get pods -n kube-system
 
 #### Configure `talos-vmtoolsd`
 
-https://www.talos.dev/v1.11/talos-guides/install/virtualized-platforms/vmware/#configure-talos-vmtoolsd
+https://docs.siderolabs.com/talos/v1.12/platform-specific-installations/virtualized-platforms/vmware#configure-talos-vmtoolsd
 
 #### Upgrading Talos Linux
 
-https://www.talos.dev/v1.11/talos-guides/upgrading-talos/
+https://docs.siderolabs.com/talos/v1.12/configure-your-talos-cluster/lifecycle-management/upgrading-talos
 
 To upgrade a Talos node, specify the node’s IP address and the installer container image for the version of Talos to upgrade to.
 
 For instance, if your Talos node has the IP address `10.1.1.21` and you want to install the current version, you would enter a command such as:
 
-```text-x-trilium-auto
-talosctl upgrade --nodes 10.1.1.21 \
-  --image ghcr.io/siderolabs/installer:v1.11.2
+```
+talosctl upgrade --nodes 10.20.30.40 \
+  --image ghcr.io/siderolabs/installer:v1.12.7
 ```
 
 #### Upgrading a Talos Node by Recreating It
