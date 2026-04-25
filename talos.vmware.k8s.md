@@ -538,7 +538,7 @@ To upgrade a Talos node, specify the node’s IP address and the installer conta
 For instance, if your Talos node has the IP address `10.1.1.21` and you want to install the current version, you would enter a command such as:
 
 ```
-talosctl upgrade --nodes 10.20.30.40 \
+talosctl upgrade --nodes 10.1.1.21 \
   --image ghcr.io/siderolabs/installer:v1.12.7
 ```
 
