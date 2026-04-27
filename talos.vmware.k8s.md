@@ -1,6 +1,6 @@
-https://docs.siderolabs.com/talos/v1.12/getting-started/getting-started
+https://docs.siderolabs.com/talos/v1.13/getting-started/getting-started
 
-https://docs.siderolabs.com/talos/v1.12/platform-specific-installations/virtualized-platforms/vmware
+https://docs.siderolabs.com/talos/v1.13/platform-specific-installations/virtualized-platforms/vmware
 
 ### Install `talosctl`
 
@@ -41,7 +41,7 @@ curl -L -o - "https://github.com/vmware/govmomi/releases/latest/download/govc_$(
 First, download `cp.patch.yaml` to your local machine and edit the VIP to match your chosen IP. You can do this by issuing:
 
 ```shell
-curl -fsSLO https://raw.githubusercontent.com/siderolabs/docs/main/static/talos/v1.12/vmware/cp.patch.yaml
+curl -fsSLO https://raw.githubusercontent.com/siderolabs/docs/main/static/talos/v1.13/vmware/cp.patch.yaml
 ```
 
 The downloaded `cp.patch.yaml` looks like this:
@@ -197,12 +197,12 @@ worker-3.yaml is valid for cloud mode
 
 ### Scripted Install
 
-https://docs.siderolabs.com/talos/v1.12/platform-specific-installations/virtualized-platforms/vmware#scripted-install
+https://docs.siderolabs.com/talos/v1.13/platform-specific-installations/virtualized-platforms/vmware#scripted-install
 
 Download `vmware.sh`:
 
 ```shell
-curl -fsSL "https://raw.githubusercontent.com/siderolabs/docs/main/static/talos/v1.12/vmware/vmware.sh" | sed s/latest/v1.12.7/ > vmware.sh
+curl -fsSL "https://raw.githubusercontent.com/siderolabs/docs/main/static/talos/v1.13/vmware/vmware.sh" | sed s/latest/v1.13.0/ > vmware.sh
 
 chmod +x vmware.sh
 ```
@@ -224,7 +224,7 @@ export GOVC_DATASTORE='datastore1'
 export GOVC_NETWORK='LANSeg - 10.1.0.0'
 
 CLUSTER_NAME=${CLUSTER_NAME:=k8s}
-TALOS_VERSION=${TALOS_VERSION:=v1.12.7}
+TALOS_VERSION=${TALOS_VERSION:=v1.13.0}
 OVA_PATH=${OVA_PATH:="https://factory.talos.dev/image/903b2da78f99adef03cbbd4df6714563823f63218508800751560d3bc3557e40/${TALOS_VERSION}/vmware-amd64.ova"}
 
 CONTROL_PLANE_COUNT=${CONTROL_PLANE_COUNT:=3}
@@ -464,12 +464,12 @@ cp -f ./kubeconfig ~/.kube/config
 
 kubectl get nodes -o wide
 NAME       STATUS   ROLES           AGE    VERSION   INTERNAL-IP   EXTERNAL-IP   OS-IMAGE          KERNEL-VERSION   CONTAINER-RUNTIME
-cp-1       Ready    control-plane   210d   v1.35.4   10.1.1.11     <none>        Talos (v1.12.7)   6.18.24-talos    containerd://2.1.7
-cp-2       Ready    control-plane   210d   v1.35.4   10.1.1.12     <none>        Talos (v1.12.7)   6.18.24-talos    containerd://2.1.7
-cp-3       Ready    control-plane   210d   v1.35.4   10.1.1.13     <none>        Talos (v1.12.7)   6.18.24-talos    containerd://2.1.7
-worker-1   Ready    worker          210d   v1.35.4   10.1.1.21     <none>        Talos (v1.12.7)   6.18.24-talos    containerd://2.1.7
-worker-2   Ready    worker          210d   v1.35.4   10.1.1.22     <none>        Talos (v1.12.7)   6.18.24-talos    containerd://2.1.7
-worker-3   Ready    worker          210d   v1.35.4   10.1.1.23     <none>        Talos (v1.12.7)   6.18.24-talos    containerd://2.1.7
+cp-1       Ready    control-plane   210d   v1.35.4   10.1.1.11     <none>        Talos (v1.13.0)   6.18.24-talos    containerd://2.1.7
+cp-2       Ready    control-plane   210d   v1.35.4   10.1.1.12     <none>        Talos (v1.13.0)   6.18.24-talos    containerd://2.1.7
+cp-3       Ready    control-plane   210d   v1.35.4   10.1.1.13     <none>        Talos (v1.13.0)   6.18.24-talos    containerd://2.1.7
+worker-1   Ready    worker          210d   v1.35.4   10.1.1.21     <none>        Talos (v1.13.0)   6.18.24-talos    containerd://2.1.7
+worker-2   Ready    worker          210d   v1.35.4   10.1.1.22     <none>        Talos (v1.13.0)   6.18.24-talos    containerd://2.1.7
+worker-3   Ready    worker          210d   v1.35.4   10.1.1.23     <none>        Talos (v1.13.0)   6.18.24-talos    containerd://2.1.7
 ```
 
 #### Label the Worker Nodes
@@ -527,11 +527,11 @@ kubectl get pods -n kube-system
 
 #### Configure `talos-vmtoolsd`
 
-https://docs.siderolabs.com/talos/v1.12/platform-specific-installations/virtualized-platforms/vmware#configure-talos-vmtoolsd
+https://docs.siderolabs.com/talos/v1.13/platform-specific-installations/virtualized-platforms/vmware#configure-talos-vmtoolsd
 
 #### Upgrading Talos Linux
 
-https://docs.siderolabs.com/talos/v1.12/configure-your-talos-cluster/lifecycle-management/upgrading-talos
+https://docs.siderolabs.com/talos/v1.13/configure-your-talos-cluster/lifecycle-management/upgrading-talos
 
 To upgrade a Talos node, specify the node’s IP address and the installer container image for the version of Talos to upgrade to.
 
@@ -539,7 +539,7 @@ For instance, if your Talos node has the IP address `10.1.1.21` and you want to 
 
 ```
 talosctl upgrade --nodes 10.1.1.21 \
-  --image ghcr.io/siderolabs/installer:v1.12.7
+  --image ghcr.io/siderolabs/installer:v1.13.0
 ```
 
 #### Upgrading a Talos Node by Recreating It
