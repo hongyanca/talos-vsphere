@@ -9,7 +9,7 @@ To trigger a Kubernetes upgrade, issue a command specifying the version of Kuber
 Note that the `--nodes` parameter specifies the control plane node to send the API call to, but all members of the cluster will be upgraded.
 
 ```bash
-talosctl --nodes 10.1.1.11 upgrade-k8s --to 1.36.0
+talosctl --nodes 10.1.1.11 upgrade-k8s --to 1.36.1
 ```
 
 ---
@@ -17,23 +17,23 @@ talosctl --nodes 10.1.1.11 upgrade-k8s --to 1.36.0
 Change Talos version and k8s version in `controlplane-x.yaml`, `worker-x.yaml`, `vmware.sh`
 
 ```bash
-# Replace Talos version from 1.13.x to 1.13.2 on Linux
-sed -i 's/:v1\.13\.[0-9]\+/:v1.13.2/g' controlplane*.yaml worker*.yaml
-sed -i 's/v1\.13\.[0-9]\+/v1.13.2/g' vmware.sh vmware-deploy-node.sh
+# Replace Talos version from 1.13.x to 1.13.3 on Linux
+sed -i 's/:v1\.13\.[0-9]\+/:v1.13.3/g' controlplane*.yaml worker*.yaml
+sed -i 's/v1\.13\.[0-9]\+/v1.13.3/g' vmware.sh vmware-deploy-node.sh
 
-# Replace Talos version from 1.13.x to 1.13.2 on macOS
+# Replace Talos version from 1.13.x to 1.13.3 on macOS
 # Use `brew install gnu-sed` to install GNU sed
-gsed -i 's/:v1\.13\.[0-9]\+/:v1.13.2/g' controlplane*.yaml worker*.yaml
-gsed -i 's/v1\.13\.[0-9]\+/v1.13.2/g' vmware.sh vmware-deploy-node.sh
+gsed -i 's/:v1\.13\.[0-9]\+/:v1.13.3/g' controlplane*.yaml worker*.yaml
+gsed -i 's/v1\.13\.[0-9]\+/v1.13.3/g' vmware.sh vmware-deploy-node.sh
 
 cat vmware-deploy-node.sh | grep TALOS_VERSION=
 
-# Replace k8s version from 1.36.x to 1.36.0 on Linux
-sed -i 's/:v1\.36\.[0-9]\+/:v1.36.0/g' controlplane*.yaml worker*.yaml
+# Replace k8s version from 1.36.x to 1.36.1 on Linux
+sed -i 's/:v1\.36\.[0-9]\+/:v1.36.1/g' controlplane*.yaml worker*.yaml
 
-# Replace k8s version from 1.36.x to 1.36.0 on macOS
+# Replace k8s version from 1.36.x to 1.36.1 on macOS
 # Use `brew install gnu-sed` to install GNU sed
-gsed -i 's/:v1\.36\.[0-9]\+/:v1.36.0/g' controlplane*.yaml worker*.yaml
+gsed -i 's/:v1\.36\.[0-9]\+/:v1.36.1/g' controlplane*.yaml worker*.yaml
 
 cat controlplane.yaml | grep 'siderolabs/kubelet'
 cat worker.yaml | grep 'siderolabs/kubelet'
