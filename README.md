@@ -6,6 +6,8 @@ The main documentation, `talos.vmware.k8s.md`, guides you through the process of
 
 For detailed, step-by-step instructions, please refer to the [talos.vmware.k8s.md](./talos.vmware.k8s.md) document.
 
+For TrueNAS backed PVCs on Talos Kubernetes using Democratic CSI, please refer to the [storage/README.md](storage/README.md) document.
+
 For Talos and Kubernetes upgrade instructions, please refer to the [upgrade.talos.and.k8s.md](./upgrade.talos.and.k8s.md) document.
 
 For `kubectl` client certification renewal, please refer to the [renew.kubectl.client.cert.md](renew.kubectl.client.cert.md) document.

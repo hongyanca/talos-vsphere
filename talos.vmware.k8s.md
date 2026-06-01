@@ -564,10 +564,6 @@ kubectl apply -f cilium.yaml
 kubectl get pods -n kube-system
 ```
 
-#### Configure `talos-vmtoolsd`
-
-https://docs.siderolabs.com/talos/v1.13/platform-specific-installations/virtualized-platforms/vmware#configure-talos-vmtoolsd
-
 #### Upgrading Talos Linux
 
 https://docs.siderolabs.com/talos/v1.13/configure-your-talos-cluster/lifecycle-management/upgrading-talos
