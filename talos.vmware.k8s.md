@@ -202,12 +202,22 @@ https://docs.siderolabs.com/talos/v1.13/platform-specific-installations/virtuali
 Download `vmware.sh`:
 
 ```shell
-curl -fsSL "https://raw.githubusercontent.com/siderolabs/docs/main/static/talos/v1.13/vmware/vmware.sh" | sed s/latest/v1.13.0/ > vmware.sh
+curl -fsSL "https://raw.githubusercontent.com/siderolabs/docs/main/static/talos/v1.13/vmware/vmware.sh" | sed s/latest/v1.13.3/ > vmware.sh
 
 chmod +x vmware.sh
 ```
 
 This script has default variables for things like Talos version and cluster name that may be interesting to tweak before deploying.
+
+#### Get Talos Linux Image schematic ID with Extensions
+
+Visit https://factory.talos.dev/
+
+Hardware Type: Cloud Server -> Choose Talos Linux Version -> Cloud: VMware -> Machine Architecture amd64 -> System Extensions: search and select vmtoolsd-guest-agent iscsi-tools nfs-utils -> Customization: BIOS only
+
+Under Schematic Ready, copy the Schematic ID `80966aaec211a8562cd422cdfb2fb67644db9f135e5bf5f26017eefe71391b67`
+
+![image-schematic-id](./talos.vmware.k8s.assets/image-schematic-id.webp) 
 
 #### Tweak `vmware.sh`
 
@@ -224,8 +234,11 @@ export GOVC_DATASTORE='datastore1'
 export GOVC_NETWORK='LANSeg - 10.1.0.0'
 
 CLUSTER_NAME=${CLUSTER_NAME:=k8s}
-TALOS_VERSION=${TALOS_VERSION:=v1.13.0}
-OVA_PATH=${OVA_PATH:="https://factory.talos.dev/image/903b2da78f99adef03cbbd4df6714563823f63218508800751560d3bc3557e40/${TALOS_VERSION}/vmware-amd64.ova"}
+TALOS_VERSION=${TALOS_VERSION:=v1.13.3}
+# OVA_PATH=${OVA_PATH:="https://factory.talos.dev/image/903b2da78f99adef03cbbd4df6714563823f63218508800751560d3bc3557e40/${TALOS_VERSION}/vmware-amd64.ova"}
+# OVA with vmtoolsd-guest-agent, iscsi-tools and nfs-utils extension from Image Factory
+OVA_PATH=${OVA_PATH:="https://factory.talos.dev/image/80966aaec211a8562cd422cdfb2fb67644db9f135e5bf5f26017eefe71391b67/${TALOS_VERSION}/vmware-amd64.ova"}
+
 
 CONTROL_PLANE_COUNT=${CONTROL_PLANE_COUNT:=3}
 CONTROL_PLANE_CPU=${CONTROL_PLANE_CPU:=4}
@@ -464,12 +477,12 @@ cp -f ./kubeconfig ~/.kube/config
 
 kubectl get nodes -o wide
 NAME       STATUS   ROLES           AGE    VERSION   INTERNAL-IP   EXTERNAL-IP   OS-IMAGE          KERNEL-VERSION   CONTAINER-RUNTIME
-cp-1       Ready    control-plane   210d   v1.35.4   10.1.1.11     <none>        Talos (v1.13.0)   6.18.24-talos    containerd://2.1.7
-cp-2       Ready    control-plane   210d   v1.35.4   10.1.1.12     <none>        Talos (v1.13.0)   6.18.24-talos    containerd://2.1.7
-cp-3       Ready    control-plane   210d   v1.35.4   10.1.1.13     <none>        Talos (v1.13.0)   6.18.24-talos    containerd://2.1.7
-worker-1   Ready    worker          210d   v1.35.4   10.1.1.21     <none>        Talos (v1.13.0)   6.18.24-talos    containerd://2.1.7
-worker-2   Ready    worker          210d   v1.35.4   10.1.1.22     <none>        Talos (v1.13.0)   6.18.24-talos    containerd://2.1.7
-worker-3   Ready    worker          210d   v1.35.4   10.1.1.23     <none>        Talos (v1.13.0)   6.18.24-talos    containerd://2.1.7
+cp-1       Ready    control-plane   210d   v1.36.1   10.1.1.11     <none>        Talos (v1.13.3)   6.18.24-talos    containerd://2.1.7
+cp-2       Ready    control-plane   210d   v1.36.1   10.1.1.12     <none>        Talos (v1.13.3)   6.18.24-talos    containerd://2.1.7
+cp-3       Ready    control-plane   210d   v1.36.1   10.1.1.13     <none>        Talos (v1.13.3)   6.18.24-talos    containerd://2.1.7
+worker-1   Ready    worker          210d   v1.36.1   10.1.1.21     <none>        Talos (v1.13.3)   6.18.24-talos    containerd://2.1.7
+worker-2   Ready    worker          210d   v1.36.1   10.1.1.22     <none>        Talos (v1.13.3)   6.18.24-talos    containerd://2.1.7
+worker-3   Ready    worker          210d   v1.36.1   10.1.1.23     <none>        Talos (v1.13.3)   6.18.24-talos    containerd://2.1.7
 ```
 
 #### Label the Worker Nodes
@@ -481,12 +494,38 @@ kubectl label nodes worker-3 node-role.kubernetes.io/worker=worker
 
 kubectl get nodes
 NAME       STATUS   ROLES           AGE    VERSION
-cp-1       Ready    control-plane   210d   v1.35.4
-cp-2       Ready    control-plane   210d   v1.35.4
-cp-3       Ready    control-plane   210d   v1.35.4
-worker-1   Ready    worker          210d   v1.35.4
-worker-2   Ready    worker          210d   v1.35.4
-worker-3   Ready    worker          210d   v1.35.4
+cp-1       Ready    control-plane   210d   v1.36.1
+cp-2       Ready    control-plane   210d   v1.36.1
+cp-3       Ready    control-plane   210d   v1.36.1
+worker-1   Ready    worker          210d   v1.36.1
+worker-2   Ready    worker          210d   v1.36.1
+worker-3   Ready    worker          210d   v1.36.1
+```
+
+#### Check Node Extensions
+
+```
+talosctl get extensions --nodes 10.1.1.23
+NODE      NAMESPACE TYPE            ID VERSION NAME                  VERSION
+10.1.1.23 runtime   ExtensionStatus 0  1       iscsi-tools           v0.2.0
+10.1.1.23 runtime   ExtensionStatus 1  1       nfs-utils             v0.1.1
+10.1.1.23 runtime   ExtensionStatus 2  1       vmtoolsd-guest-agent  v1.5.0
+10.1.1.23 runtime   ExtensionStatus 3  1       schematic             80966aaec211a8562cd422cdfb2fb67644db9f135e5bf5f26017eefe71391b67
+
+talosctl service ext-iscsid --nodes 10.1.1.22
+NODE     10.1.1.22
+ID       ext-iscsid
+STATE    Running
+HEALTH   ?
+EVENTS   [Running]: Started task ext-iscsid (PID 2994) for container ext-iscsid (11m56s ago)
+         [Preparing]: Creating service runner (11m56s ago)
+         [Preparing]: Running pre state (11m56s ago)
+         [Waiting]: Waiting for service "cri" to be "up" (11m56s ago)
+         [Waiting]: Waiting for service "cri" to be registered (11m57s ago)
+         [Waiting]: Waiting for service "cri" to be registered, network (12m1s ago)
+         [Waiting]: Waiting for service "containerd" to be "up", service "cri" to be registered, network (12m2s ago)
+         [Waiting]: Waiting for service "containerd" to be "up", service "cri" to be "up", network, file "/etc/iscsi/initiatorname.iscsi" to exist (12m3s ago)
+         [Starting]: Starting service (12m3s ago)
 ```
 
 #### Deploying Cilium CNI - Helm manifests install
@@ -539,7 +578,7 @@ For instance, if your Talos node has the IP address `10.1.1.21` and you want to 
 
 ```
 talosctl upgrade --nodes 10.1.1.21 \
-  --image ghcr.io/siderolabs/installer:v1.13.0
+  --image ghcr.io/siderolabs/installer:v1.13.3
 ```
 
 #### Upgrading a Talos Node by Recreating It
