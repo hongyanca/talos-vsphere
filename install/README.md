@@ -1,3 +1,5 @@
+## Install Talos Linux on VMware vSphere
+
 https://docs.siderolabs.com/talos/v1.13/getting-started/getting-started
 
 https://docs.siderolabs.com/talos/v1.13/platform-specific-installations/virtualized-platforms/vmware
@@ -120,7 +122,7 @@ Keep `controlplane-1.yaml` as is.
 
 Modify `controlplane-2.yaml` to reflect hostname and IP address of `cp-2`:
 
-![cp2-net-config](./talos.vmware.k8s.assets/cp2-net-config.webp) 
+![cp2-net-config](./README.assets/cp2-net-config.webp) 
 
 Modify `controlplane-3.yaml` to reflect hostname and IP address of `cp-3`.
 
@@ -167,7 +169,7 @@ Modify `worker-1.yaml`, `worker-2.yaml` and `worker-3.yaml` with worker nodes' h
 
 Not sure if `cni` should be patched in `worker-x.yaml`
 
-![worker-yaml-cni](./talos.vmware.k8s.assets/worker-yaml-cni.webp) 
+![worker-yaml-cni](./README.assets/worker-yaml-cni.webp) 
 
 #### Validate the Configuration Files
 
@@ -217,7 +219,7 @@ Hardware Type: Cloud Server -> Choose Talos Linux Version -> Cloud: VMware -> Ma
 
 Under Schematic Ready, copy the Schematic ID `80966aaec211a8562cd422cdfb2fb67644db9f135e5bf5f26017eefe71391b67`
 
-![image-schematic-id](./talos.vmware.k8s.assets/image-schematic-id.webp) 
+![image-schematic-id](./README.assets/image-schematic-id.webp) 
 
 #### Tweak `vmware.sh`
 
@@ -411,7 +413,7 @@ In the vSphere UI, open a console to one of the control plane nodes. You should 
 "etcd is waiting to join the cluster, if this node is the first node in the cluster, please run `talosctl bootstrap` against one of the following IPs:
 ```
 
-![talos-bootstrap-ip-info](./talos.vmware.k8s.assets/talos-bootstrap-ip-info.webp) 
+![talos-bootstrap-ip-info](./README.assets/talos-bootstrap-ip-info.webp) 
 
 Add `endpoints` and `nodes` to `talosconfig` file.
 
@@ -459,7 +461,7 @@ Once `STAGE: v Running` appears under `SIDEROLINK n/a`, you should be able to pi
 >
 > `STAGE: v Running` may not appear without reboot the node.
 
-![cp1-node-details](./talos.vmware.k8s.assets/cp1-node-details.webp) 
+![cp1-node-details](./README.assets/cp1-node-details.webp) 
 
 #### Retrieve the `kubeconfig`
 

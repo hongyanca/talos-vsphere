@@ -14,7 +14,9 @@ set -e
 
 CLUSTER_NAME=${CLUSTER_NAME:=k8s}
 TALOS_VERSION=${TALOS_VERSION:=v1.13.3}
-OVA_PATH=${OVA_PATH:="https://factory.talos.dev/image/903b2da78f99adef03cbbd4df6714563823f63218508800751560d3bc3557e40/${TALOS_VERSION}/vmware-amd64.ova"}
+# OVA_PATH=${OVA_PATH:="https://factory.talos.dev/image/903b2da78f99adef03cbbd4df6714563823f63218508800751560d3bc3557e40/${TALOS_VERSION}/vmware-amd64.ova"}
+# OVA with vmtoolsd-guest-agent, iscsi-tools and nfs-utils extensions from Image Factory
+OVA_PATH=${OVA_PATH:="https://factory.talos.dev/image/80966aaec211a8562cd422cdfb2fb67644db9f135e5bf5f26017eefe71391b67/${TALOS_VERSION}/vmware-amd64.ova"}
 
 CONTROL_PLANE_COUNT=${CONTROL_PLANE_COUNT:=3}
 CONTROL_PLANE_CPU=${CONTROL_PLANE_CPU:=4}
