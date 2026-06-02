@@ -18,7 +18,8 @@ stringData:
       shareCommentTemplate: "{{ parameters.[csi.storage.k8s.io/pvc/namespace] }}-{{ parameters.[csi.storage.k8s.io/pvc/name] }}"
       shareAlldirs: false
       shareAllowedNetworks:
-      - 10.0.0.0/13
+        - 10.0.0.0/13
+        - 192.168.0.0/24
       shareHost: 192.168.0.9
       shareMapallGroup: nfs
       shareMapallUser: nfs

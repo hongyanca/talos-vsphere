@@ -1,0 +1,42 @@
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: truenas-iscsi-driver-config
+  namespace: storage
+stringData:
+  driver-config-file.yaml: |
+    driver: freenas-api-iscsi
+    httpConnection:
+      allowInsecure: true
+      apiKey: $TRUENAS_API_KEY
+      host: 192.168.0.9
+      port: 80
+      protocol: http
+    instance_id: null
+    iscsi:
+      targetPortal: "192.168.0.9:3260"
+      targetPortals: [] 
+      interface:
+      namePrefix: csi-
+      nameSuffix: "-cluster"
+      targetGroups:
+        - targetGroupPortalGroup: 2
+          targetGroupInitiatorGroup: 5
+          targetGroupAuthType: None
+          targetGroupAuthGroup:
+      extentCommentTemplate: "{{ parameters.[csi.storage.k8s.io/pvc/namespace] }}/{{ parameters.[csi.storage.k8s.io/pvc/name] }}"
+      extentInsecureTpc: true
+      extentXenCompat: false
+      extentRpm: "SSD"
+      extentBlocksize: 512
+      extentAvailThreshold: 0
+    zfs:
+      datasetParentName: nvme/iscsi/kubernetes/volumes
+      detachedSnapshotsDatasetParentName: nvme/iscsi/kubernetes/snapshots
+      zvolCompression:
+      zvolDedup:
+      zvolEnableReservation: false
+      zvolBlocksize:
+      datasetProperties:
+        "org.freenas:description": "{{ parameters.[csi.storage.k8s.io/pvc/namespace] }}/{{ parameters.[csi.storage.k8s.io/pvc/name] }}"

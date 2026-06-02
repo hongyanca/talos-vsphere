@@ -1,6 +1,8 @@
 # TrueNAS backed PVCs on Talos Kubernetes using Democratic CSI
 
-There are some incorrect info in https://wazaari.dev/blog/truenas-talos-democratic-csi
+Credit: https://wazaari.dev/blog/truenas-talos-democratic-csi
+
+I found the document to be highly insightful and valuable. That said, there are just a couple of very minor inaccuracies that might need attention.
 
 ## Talos, TrueNAS, Democratic CSI
 
@@ -354,11 +356,281 @@ Cleanup:
 kubectl delete -f test-pvc-pod.yaml
 ```
 
----
+
 
 ## iSCSI Setup
 
 iSCSI setup is relatively similar, we just have to prepare a few things on the TrueNAS side. Many guides use the iSCSI wizard, which creates a lot of things we don't need. We'll go for the minimalistic setup and only create the neccessary components.
 
+Go to **System**, **Services** and **enable** the iSCSI service. Configure it to start on boot. You typically don't need to change any settings, but if you want to use a different port instead of the default 3260, you can change it here.
+
+Go to **Shares** and click on the small icon right between the text `Block (iSCSI) Shares Targets` and the `RUNNING` badge:
+
+![truenas-share-iscsi](./README.assets/truenas-share-iscsi.webp) 
+
+It is not required to configure any targets or extents, this will be handled by the CSI driver via the API. However, an **Initiator Group** (essentially an ACL) is required, a **portal** needs to be configured. For the iniator group we would need to know the IQN of our Talos nodes, which I was unable to find before the first connection attempt. Therefore I created a very permissive initiator group that allows all initiators:
+
+- Go to the **Initiator** tab, click on **Add** on **Initiator Groups** card title to add a new group
+- Select `Allow all initiators`
+- Optionally add a description
+- Save
+
+Note down the **Initiator Group ID**, we'll need it later.
+
+![iscsi-initiators-groups](./README.assets/iscsi-initiators-groups.webp) 
+
+Next, lets add a portal (essentially on which interface the iSCSI service will listen):
+
+- Go to the **Portals** tab and **Add** a new portal:
+- Select the interface you want the iSCSI service to listen on
+- Optionally add a description
+- Save
+
+![iscsi-portal-settings](./README.assets/iscsi-portal-settings.webp) 
+
+Note down the portal ID, we'll need it later. Apparently there's some bug in the TrueNAS UI not always showing the **correct ID** (although I haven't seen it), so in doubt double check the ID by using the TrueNAS CLI. Go to **System Settings** > **Shell** from the left-hand menu. Once the dark terminal screen opens and shows the standard Linux/FreeBSD root prompt, type `cli` and press `Enter`. In TrueNAS CLI, type `sharing iscsi portal query` to see the port ID:
+
+![iscsi-portal-query](./README.assets/iscsi-portal-query.webp) 
+
+Or in the System Shell, type `midclt call iscsi.portal.query | jq`
+
+```
+midclt call iscsi.portal.query | jq
+[
+  {
+    "id": 2,
+    "listen": [
+      {
+        "ip": "192.168.0.9",
+        "port": 3260
+      }
+    ],
+    "tag": 1,
+    "comment": "k8s-iscsi"
+  }
+]
+```
+
+### Datasets
+
+We also need to create two datasets, one for the actual volumes and one for the snapshots. Create them similar to the NFS datasets, just make sure they are not children of each other. No special settings are required. Just make sure to note the dataset paths, we'll need them later. It should look somewhat like this:
+
+![dataset-iscsi-k8s](./README.assets/dataset-iscsi-k8s.webp) 
+
+### Democratic CSI Deployment
+
+The iSCSI deployment is very similar to the NFS one. We again create a secret containing the driver configuration `truenas-iscsi-driver-config.yaml`:
+
+```yaml
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: truenas-iscsi-driver-config
+  namespace: storage
+stringData:
+  driver-config-file.yaml: |
+    driver: freenas-api-iscsi
+    httpConnection:
+      allowInsecure: true
+      apiKey: $TRUENAS_API_KEY
+      host: 192.168.0.9
+      port: 80
+      protocol: http
+    instance_id: null
+    iscsi:
+      targetPortal: "192.168.0.9:3260"
+      targetPortals: [] 
+      interface:
+      namePrefix: csi-
+      nameSuffix: "-cluster"
+      targetGroups:
+        - targetGroupPortalGroup: 2
+          targetGroupInitiatorGroup: 5
+          targetGroupAuthType: None
+          targetGroupAuthGroup:
+      extentCommentTemplate: "{{ parameters.[csi.storage.k8s.io/pvc/namespace] }}/{{ parameters.[csi.storage.k8s.io/pvc/name] }}"
+      extentInsecureTpc: true
+      extentXenCompat: false
+      extentRpm: "SSD"
+      extentBlocksize: 512
+      extentAvailThreshold: 0
+    zfs:
+      datasetParentName: nvme/iscsi/kubernetes/volumes
+      detachedSnapshotsDatasetParentName: nvme/iscsi/kubernetes/snapshots
+      zvolCompression:
+      zvolDedup:
+      zvolEnableReservation: false
+      zvolBlocksize:
+      datasetProperties:
+        "org.freenas:description": "{{ parameters.[csi.storage.k8s.io/pvc/namespace] }}/{{ parameters.[csi.storage.k8s.io/pvc/name] }}"
+```
+
+Again some important notes:
+
+- The `targetPortal` should be the IP address of your TrueNAS appliance in the iSCSI network
+- The `targetGroupPortalGroup` should be the ID of the portal you created earlier
+- The `targetGroupInitiatorGroup` should be the ID of the initiator group you created earlier
+- The `datasetParentName` and `detachedSnapshotsDatasetParentName` should be the full path to the datasets you created earlier
+- The `extentCommentTemplate` is very useful to identify extents, as those will be displayed in the extent list
+- You can also set properties for the ZFS volumes, I left most of them empty
+
+Create the namespace and the secret:
+
+```text
+kubectl create namespace storage
+kubectl apply -f truenas-iscsi-driver-config.yaml
+
+# If using Talos, we also need to allow privileged containers in the storage namespace
+kubectl label namespace storage pod-security.kubernetes.io/enforce=privileged
+```
+
+Verify the created secret:
+
+```text
+kubectl get secrets -n storage
+
+NAME                          TYPE                 DATA   AGE
+sh.helm.release.v1.nfs.v1     helm.sh/release.v1   1      18h
+truenas-iscsi-driver-config   Opaque               1      14s
+truenas-nfs-driver-config     Opaque               1      18h
+```
+
+With this secret created, we can now create a `iscsi_democratic_csi_helm.yml` file for the Helm chart:
+
+Again a few notes:
+
+- The `extraEnv` settings as well as `iscsiDirHostPath` and `iscsiDirHostPathType` are required for Talos only, they not be required for other Kubernetes distributions
+- Depending on the Talos iSCSI extension version, the `iscsiDirHostPath` is different:
+  - For version `v0.2.0` (current as of Talos 1.13.3) it is `/var/iscsi`
+  - For previous versions it is `/usr/local/etc/iscsi`
+- You can of course choose a different file system type if desired
+
+We can then install the Helm chart:
+
+```shell
+helm repo add democratic-csi https://democratic-csi.github.io/charts/
+helm repo update
+helm upgrade --install --namespace storage --values iscsi_democratic_csi_helm.yml iscsi democratic-csi/democratic-csi
+```
+
+You should now see the storage class and the driver running:
+
+```text
+kubectl get sc
+NAME      PROVISIONER      RECLAIMPOLICY   VOLUMEBINDINGMODE   ALLOWVOLUMEEXPANSION   AGE
+iscsi     iscsi            Delete          Immediate           true                   26s
+nfs       nfs              Delete          Immediate           true                   18h
+
+kubectl get pods -n storage
+NAME                                               READY   STATUS    RESTARTS      AGE
+iscsi-democratic-csi-controller-7b598cd4f4-gmb8l   6/6     Running   0             35s
+iscsi-democratic-csi-node-6ltz7                    4/4     Running   0             35s
+iscsi-democratic-csi-node-jvxzc                    4/4     Running   0             35s
+iscsi-democratic-csi-node-k2swk                    4/4     Running   0             35s
+nfs-democratic-csi-controller-86b8b778f7-p6j5m     6/6     Running   6 (15h ago)   18h
+nfs-democratic-csi-node-6nlxw                      4/4     Running   0             18h
+nfs-democratic-csi-node-fnd9p                      4/4     Running   0             18h
+nfs-democratic-csi-node-tpd6s                      4/4     Running   0             18h
+```
+
+Lets now test the setup by creating a PVC and mounting it to a pod. Create `test-pvc-pod.yaml`:
+
+```yaml
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: test
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: test-pvc
+  namespace: test
+spec:
+  accessModes:
+    - ReadWriteOnce
+  storageClassName: iscsi
+  resources:
+    requests:
+      storage: 10Gi
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: storage-test-pod
+  namespace: test
+  labels:
+    app: storage-test
+spec:
+  containers:
+  - name: test-container
+    image: busybox:1.36
+    command:
+    - sleep
+    - "3600"
+    volumeMounts:
+    - name: test-volume
+      mountPath: /data
+  volumes:
+  - name: test-volume
+    persistentVolumeClaim:
+      claimName: test-pvc
+  restartPolicy: Never
+```
+
+Apply the manifest and check that the pod is running:
+
+```
+kubectl apply -f test-pvc-pod.yaml
+namespace/test created
+persistentvolumeclaim/test-pvc created
+
+kubectl get pods -n test
+NAME               READY   STATUS    RESTARTS   AGE
+storage-test-pod   1/1     Running   0          75s
+
+# You can also exec into the pod and create a test file
+kubectl exec -it storage-test-pod -n test -- sh
+/ #
+/ # echo "Hello World" > /data/hello.txt
+/ # exit
+```
+
+![kubectl-get-pv-pvc](./README.assets/kubectl-get-pv-pvc.webp) 
+
+You should now see a new share on TrueNAS and a new dataset created, which is automatically shared via iSCSI.
+
+![truenas-datasets-iscsi-pvc-view](./README.assets/truenas-datasets-iscsi-pvc-view.webp) 
+
+Cleanup:
+
+```shell
+kubectl delete -f test-pvc-pod.yaml
+```
 
 
+
+## Troubleshooting
+
+When using iSCSI and the volume is not creating with the following message:
+
+```text
+Events:
+Type     Reason                  Age                  From                     Message
+----     ------                  ----                 ----                     -------
+Warning  FailedScheduling        2m8s                 default-scheduler        0/6 nodes are available: pod has unbound immediate PersistentVolumeClaims. not found
+Warning  FailedScheduling        115s (x2 over 115s)  default-scheduler        0/6 nodes are available: pod has unbound immediate PersistentVolumeClaims. not found
+Normal   Scheduled               115s                 default-scheduler        Successfully assigned storage/storage-test-pod to talos-worker1
+Normal   SuccessfulAttachVolume  115s                 attachdetach-controller  AttachVolume.Attach succeeded for volume "pvc-180149f1-c13c-4a7f-9f97-db12fc2546a9"
+Warning  FailedMount             20s (x7 over 100s)   kubelet                  MountVolume.MountDevice failed for volume "pvc-180149f1-c13c-4a7f-9f97-db12fc2546a9" : rpc error: code = Internal desc = {"code":1,"stdout":"","stderr":"failed to find iscsid pid for nsenter\n","timeout":false}
+```
+
+This is an indication that the iSCSI boot asset is not installed correctly. Refer to the Talos section above for details.
+
+
+
+## Conclusion
+
+Using Democratic CSI with TrueNAS and Talos is a solid solution to provide persistent storage for your Kubernetes cluster. The setup is relatively straightforward and provides a lot of flexibility. The driver supports both NFS and iSCSI, as well as snapshotting. The configuration can be done via the TrueNAS API, which is a big plus in my opinion. If you're looking for a way to provide storage for your Kubernetes cluster, give Democratic CSI a try!

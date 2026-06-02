@@ -581,4 +581,4 @@ talosctl upgrade --nodes 10.1.1.21 \
 
 #### Upgrading a Talos Node by Recreating It
 
-For Talos and Kubernetes upgrade instructions, please refer to the [upgrade.talos.and.k8s.md](./upgrade.talos.and.k8s.md) document.
+For Talos and Kubernetes upgrade instructions, please refer to the [upgrade.talos.and.k8s.md](../maintenance/upgrade.talos.and.k8s.md) document.
