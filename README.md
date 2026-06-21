@@ -8,3 +8,4 @@ The main documentation, [Step-by-step Installation](./install/README.md), guides
 - For TrueNAS backed PVCs on Talos Kubernetes using Democratic CSI, please refer to the [NFS and iSCSI Configuration](storage/README.md) document.
 - For Talos and Kubernetes upgrade instructions, please refer to the [maintenance/upgrade.talos.and.k8s.md](./maintenance/upgrade.talos.and.k8s.md) document.
 - For `kubectl` client certification renewal, please refer to the [maintenance/renew.kubectl.client.cert.md](./maintenance/renew.kubectl.client.cert.md) document.
+- For `talosctl` client certificate renewal, please refer to the [maintenance/renew.talos.client.cert.md](./maintenance/renew.talos.client.cert.md) document.
