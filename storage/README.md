@@ -17,8 +17,8 @@ Goals:
 
 Involved components:
 
-- A Kubernetes cluster running Talos Linux (Talos version 1.13.3, Kubernetes version 1.36.1)
-- A TrueNAS appliance (version 25.10.3.1 - Goldeye)
+- A Kubernetes cluster running Talos Linux (Talos version 1.13.4, Kubernetes version 1.36.1)
+- A TrueNAS appliance (version 25.10.4 - Goldeye)
 
 ---
 
@@ -152,7 +152,11 @@ Next we change the permissions of both datasets to be owned by the `nfs` user we
 
 The next step is to deploy Democratic CSI to the cluster. The project provides a Helm chart which we are going to use, however finding the correct values was a bit challenging. In general, we need to provide the **driver** and its details and the `storageClasses` and `volumeSnapshotClasses` it should create. The driver details contain the TrueNAS connection details, including the API user, therefore I decided to use a Kubernetes secret for that.
 
-`truenas-nfs-driver-config.yaml`
+`truenas-nfs-driver-config.yaml`.
+
+> [!NOTE]
+>
+> Replace `$TRUENAS_API_KEY` with the API KEY associated with `k8sadmin` and `$TRUENAS_HOST` with the IP address or FQDN of the host.
 
 ```yaml
 ---
@@ -167,7 +171,7 @@ stringData:
     httpConnection:
       allowInsecure: true
       apiKey: $TRUENAS_API_KEY
-      host: 192.168.0.9
+      host: $TRUENAS_HOST
       port: 80
       protocol: http
     instance_id: null
@@ -419,7 +423,11 @@ We also need to create two datasets, one for the actual volumes and one for the 
 
 ### Democratic CSI Deployment
 
-The iSCSI deployment is very similar to the NFS one. We again create a secret containing the driver configuration `truenas-iscsi-driver-config.yaml`:
+The iSCSI deployment is very similar to the NFS one. We again create a secret containing the driver configuration `truenas-iscsi-driver-config.yaml`.
+
+> [!NOTE]
+>
+> Replace `$TRUENAS_API_KEY` with the API KEY associated with `k8sadmin` and `$TRUENAS_HOST` with the IP address or FQDN of the host.
 
 ```yaml
 ---
@@ -434,7 +442,7 @@ stringData:
     httpConnection:
       allowInsecure: true
       apiKey: $TRUENAS_API_KEY
-      host: 192.168.0.9
+      host: $TRUENAS_HOST
       port: 80
       protocol: http
     instance_id: null

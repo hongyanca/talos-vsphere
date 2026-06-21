@@ -549,7 +549,7 @@ Check the lastest release of cilium at: https://github.com/cilium/cilium
 helm template \
     cilium \
     cilium/cilium \
-    --version 1.19.4 \
+    --version 1.19.5 \
     --namespace kube-system \
     --set ipam.mode=kubernetes \
     --set kubeProxyReplacement=true \
@@ -576,7 +576,7 @@ For instance, if your Talos node has the IP address `10.1.1.21` and you want to 
 
 ```
 talosctl upgrade --nodes 10.1.1.21 \
-  --image ghcr.io/siderolabs/installer:v1.13.3
+  --image ghcr.io/siderolabs/installer:v1.13.4
 ```
 
 #### Upgrading a Talos Node by Recreating It
