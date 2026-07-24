@@ -17,8 +17,8 @@ Goals:
 
 Involved components:
 
-- A Kubernetes cluster running Talos Linux (Talos version 1.13.4, Kubernetes version 1.36.1)
-- A TrueNAS appliance (version 25.10.4 - Goldeye)
+- A Kubernetes cluster running Talos Linux (Talos version **1.13.8**, Kubernetes version **1.36.2**)
+- A TrueNAS appliance (version **25.10.6** - Goldeye)
 
 ---
 
