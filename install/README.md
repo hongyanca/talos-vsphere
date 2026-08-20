@@ -479,12 +479,12 @@ cp -f ./kubeconfig ~/.kube/config
 
 kubectl get nodes -o wide
 NAME       STATUS   ROLES           AGE    VERSION   INTERNAL-IP   EXTERNAL-IP   OS-IMAGE          KERNEL-VERSION   CONTAINER-RUNTIME
-cp-1       Ready    control-plane   210d   v1.36.1   10.1.1.11     <none>        Talos (v1.13.3)   6.18.24-talos    containerd://2.1.7
-cp-2       Ready    control-plane   210d   v1.36.1   10.1.1.12     <none>        Talos (v1.13.3)   6.18.24-talos    containerd://2.1.7
-cp-3       Ready    control-plane   210d   v1.36.1   10.1.1.13     <none>        Talos (v1.13.3)   6.18.24-talos    containerd://2.1.7
-worker-1   Ready    worker          210d   v1.36.1   10.1.1.21     <none>        Talos (v1.13.3)   6.18.24-talos    containerd://2.1.7
-worker-2   Ready    worker          210d   v1.36.1   10.1.1.22     <none>        Talos (v1.13.3)   6.18.24-talos    containerd://2.1.7
-worker-3   Ready    worker          210d   v1.36.1   10.1.1.23     <none>        Talos (v1.13.3)   6.18.24-talos    containerd://2.1.7
+cp-1       Ready    control-plane   210d   v1.36.3   10.1.1.11     <none>        Talos (v1.13.3)   6.18.24-talos    containerd://2.1.7
+cp-2       Ready    control-plane   210d   v1.36.3   10.1.1.12     <none>        Talos (v1.13.3)   6.18.24-talos    containerd://2.1.7
+cp-3       Ready    control-plane   210d   v1.36.3   10.1.1.13     <none>        Talos (v1.13.3)   6.18.24-talos    containerd://2.1.7
+worker-1   Ready    worker          210d   v1.36.3   10.1.1.21     <none>        Talos (v1.13.3)   6.18.24-talos    containerd://2.1.7
+worker-2   Ready    worker          210d   v1.36.3   10.1.1.22     <none>        Talos (v1.13.3)   6.18.24-talos    containerd://2.1.7
+worker-3   Ready    worker          210d   v1.36.3   10.1.1.23     <none>        Talos (v1.13.3)   6.18.24-talos    containerd://2.1.7
 ```
 
 #### Label the Worker Nodes
@@ -496,12 +496,12 @@ kubectl label nodes worker-3 node-role.kubernetes.io/worker=worker
 
 kubectl get nodes
 NAME       STATUS   ROLES           AGE    VERSION
-cp-1       Ready    control-plane   210d   v1.36.1
-cp-2       Ready    control-plane   210d   v1.36.1
-cp-3       Ready    control-plane   210d   v1.36.1
-worker-1   Ready    worker          210d   v1.36.1
-worker-2   Ready    worker          210d   v1.36.1
-worker-3   Ready    worker          210d   v1.36.1
+cp-1       Ready    control-plane   210d   v1.36.3
+cp-2       Ready    control-plane   210d   v1.36.3
+cp-3       Ready    control-plane   210d   v1.36.3
+worker-1   Ready    worker          210d   v1.36.3
+worker-2   Ready    worker          210d   v1.36.3
+worker-3   Ready    worker          210d   v1.36.3
 ```
 
 #### Check Node Extensions
@@ -549,7 +549,7 @@ Check the lastest release of cilium at: https://github.com/cilium/cilium
 helm template \
     cilium \
     cilium/cilium \
-    --version 1.19.5 \
+    --version 1.20.1 \
     --namespace kube-system \
     --set ipam.mode=kubernetes \
     --set kubeProxyReplacement=true \
@@ -576,7 +576,7 @@ For instance, if your Talos node has the IP address `10.1.1.21` and you want to 
 
 ```
 talosctl upgrade --nodes 10.1.1.21 \
-  --image ghcr.io/siderolabs/installer:v1.13.4
+  --image ghcr.io/siderolabs/installer:v1.13.9
 ```
 
 #### Upgrading a Talos Node by Recreating It
