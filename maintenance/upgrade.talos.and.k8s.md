@@ -14,7 +14,11 @@ talosctl --nodes 10.1.1.11 upgrade-k8s --to 1.36.3
 
 ---
 
-Change Talos version and k8s version in `controlplane-x.yaml`, `worker-x.yaml`, `vmware.sh`
+For the shell workflow, change the Talos and Kubernetes versions in `controlplane-x.yaml`,
+`worker-x.yaml`, and the shell deployment scripts. `vmware-deploy-node.py` automatically retrieves
+the latest stable Talos release from GitHub and synchronizes the Kubernetes component images in all
+`controlplane*.yaml` and `worker*.yaml` files during `upload_ova`; set `TALOS_VERSION` to override it
+with a specific Talos version.
 
 ```bash
 # Replace Talos version from 1.13.x to 1.13.9 on Linux
@@ -26,7 +30,8 @@ sed -i 's/v1\.13\.[0-9]\+/v1.13.9/g' vmware.sh vmware-deploy-node.sh
 gsed -i 's/:v1\.13\.[0-9]\+/:v1.13.9/g' controlplane*.yaml worker*.yaml
 gsed -i 's/v1\.13\.[0-9]\+/v1.13.9/g' vmware.sh vmware-deploy-node.sh
 
-cat vmware-deploy-node.sh | grep TALOS_VERSION=
+# Optional: pin the Python deployment script instead of using the latest stable release
+export TALOS_VERSION=v1.13.9
 
 # Replace k8s version from 1.36.x to 1.36.3 on Linux
 sed -i 's/:v1\.36\.[0-9]\+/:v1.36.3/g' controlplane*.yaml worker*.yaml
@@ -52,20 +57,39 @@ export GOVC_DATASTORE='datastore1'
 export GOVC_NETWORK='LANSeg - 10.1.0.0'
 ```
 
+Choose either the shell or Python version:
+
 ```bash
+# Shell (load .env into the current shell first)
 source .env
 ./vmware-deploy-node.sh delete_ova
 ./vmware-deploy-node.sh upload_ova
+
+# Python (automatically loads .env from the script's directory)
+# It uses the latest stable Talos release unless TALOS_VERSION is set.
+./vmware-deploy-node.py delete_ova
+./vmware-deploy-node.py upload_ova
+
+# Or perform the Python delete-if-present and upload steps with one command
+./vmware-deploy-node.py update_ova
 ```
 
-Replace one node at a time.
+Replace one node at a time using either version.
 
 ```bash
+# Shell
 ./vmware-deploy-node.sh replace worker 3
 ./vmware-deploy-node.sh replace worker 2
 ./vmware-deploy-node.sh replace worker 1
 ./vmware-deploy-node.sh replace cp 3
 ./vmware-deploy-node.sh replace cp 2
 ./vmware-deploy-node.sh replace cp 1
-```
 
+# Python
+./vmware-deploy-node.py replace worker 3
+./vmware-deploy-node.py replace worker 2
+./vmware-deploy-node.py replace worker 1
+./vmware-deploy-node.py replace cp 3
+./vmware-deploy-node.py replace cp 2
+./vmware-deploy-node.py replace cp 1
+```
