@@ -549,7 +549,7 @@ Check the lastest release of cilium at: https://github.com/cilium/cilium
 helm template \
     cilium \
     cilium/cilium \
-    --version 1.20.1 \
+    --version 1.20.2 \
     --namespace kube-system \
     --set ipam.mode=kubernetes \
     --set kubeProxyReplacement=true \
