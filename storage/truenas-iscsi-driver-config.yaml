@@ -11,8 +11,8 @@ stringData:
       allowInsecure: true
       apiKey: $TRUENAS_API_KEY
       host: 192.168.0.9
-      port: 80
-      protocol: http
+      port: 443
+      protocol: https
     instance_id: null
     iscsi:
       targetPortal: "192.168.0.9:3260"

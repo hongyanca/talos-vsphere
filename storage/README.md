@@ -17,8 +17,8 @@ Goals:
 
 Involved components:
 
-- A Kubernetes cluster running Talos Linux (Talos version **1.13.8**, Kubernetes version **1.36.2**)
-- A TrueNAS appliance (version **25.10.6** - Goldeye)
+- A Kubernetes cluster running Talos Linux (Talos version **1.14.4**, Kubernetes version **1.37.1**)
+- A TrueNAS appliance (version **25.10.7** - Goldeye)
 
 ---
 
@@ -172,8 +172,8 @@ stringData:
       allowInsecure: true
       apiKey: $TRUENAS_API_KEY
       host: $TRUENAS_HOST
-      port: 80
-      protocol: http
+      port: 443
+      protocol: https
     instance_id: null
     nfs:
       shareCommentTemplate: "{{ parameters.[csi.storage.k8s.io/pvc/namespace] }}-{{ parameters.[csi.storage.k8s.io/pvc/name] }}"
@@ -224,7 +224,7 @@ With this secret created, we can now create a `nfs_democratic_csi_helm.yaml` fil
 controller:
   driver:
     image:
-      tag: next
+      tag: v1.9.5
 csiDriver:
   name: nfs
 driver:
@@ -252,7 +252,7 @@ volumeSnapshotClasses:
 
 Again a few notes:
 
-- We're using the `next` tag of the image as it contains an important fix to make it work with TrueNAS 24.05. See this [Github Issue](https://github.com/democratic-csi/democratic-csi/issues/509#issuecomment-3170438096) for details.
+- Pin both controller images to `v1.9.5`, which supports TrueNAS 25.10. The September 30, 2026 changes on `next` switched the API driver to WebSockets and require TrueNAS 26 or newer. See the troubleshooting note below before changing image versions.
 - The `storageClasses` defines the name of the storage class, change it to your liking
 - The `driver` section refers to the secret we created earlier. It still has to specify the driver type
 
@@ -443,8 +443,8 @@ stringData:
       allowInsecure: true
       apiKey: $TRUENAS_API_KEY
       host: $TRUENAS_HOST
-      port: 80
-      protocol: http
+      port: 443
+      protocol: https
     instance_id: null
     iscsi:
       targetPortal: "192.168.0.9:3260"
@@ -622,20 +622,35 @@ kubectl delete -f test-pvc-pod.yaml
 
 ## Troubleshooting
 
-When using iSCSI and the volume is not creating with the following message:
+### Volume attachment timeout after a controller restart
+
+On October 19, 2026, a replacement SearXNG pod remained in `ContainerCreating` with:
 
 ```text
-Events:
-Type     Reason                  Age                  From                     Message
-----     ------                  ----                 ----                     -------
-Warning  FailedScheduling        2m8s                 default-scheduler        0/6 nodes are available: pod has unbound immediate PersistentVolumeClaims. not found
-Warning  FailedScheduling        115s (x2 over 115s)  default-scheduler        0/6 nodes are available: pod has unbound immediate PersistentVolumeClaims. not found
-Normal   Scheduled               115s                 default-scheduler        Successfully assigned storage/storage-test-pod to talos-worker1
-Normal   SuccessfulAttachVolume  115s                 attachdetach-controller  AttachVolume.Attach succeeded for volume "pvc-180149f1-c13c-4a7f-9f97-db12fc2546a9"
-Warning  FailedMount             20s (x7 over 100s)   kubelet                  MountVolume.MountDevice failed for volume "pvc-180149f1-c13c-4a7f-9f97-db12fc2546a9" : rpc error: code = Internal desc = {"code":1,"stdout":"","stderr":"failed to find iscsid pid for nsenter\n","timeout":false}
+AttachVolume.Attach failed ... timed out waiting for external-attacher of nfs CSI driver
 ```
 
-This is an indication that the iSCSI boot asset is not installed correctly. Refer to the Talos section above for details.
+The PVC and PV were still `Bound`, and the existing pod continued running. Both NFS and iSCSI controllers were in `CrashLoopBackOff`. A bound PVC confirms allocation; check controller health and volume attachments separately:
+
+```shell
+kubectl get pods -n storage
+kubectl get volumeattachment -o wide
+kubectl logs -n storage deployment/nfs-democratic-csi-controller -c csi-driver --tail=50
+kubectl logs -n storage deployment/iscsi-democratic-csi-controller -c csi-driver --tail=50
+```
+
+Two issues were found:
+
+1. The API connection used HTTP/80. TrueNAS redirected the WebSocket connection to HTTPS, producing `Unexpected server response: 307`. Set `httpConnection.protocol: https` and `httpConnection.port: 443` in both driver Secrets. Preserve the existing host, credentials, and certificate settings. The manifests are `truenas-nfs-driver-config.yaml` and `truenas-iscsi-driver-config.yaml`; their Kubernetes Secrets have the same names without `.yaml`.
+2. After HTTPS connected successfully, the `next` controller image reported `driver is only available with TrueNAS version >=26`. Pin `controller.driver.image.tag: v1.9.5` in both Helm values files for this TrueNAS 25.10 setup. The [upstream change](https://github.com/democratic-csi/democratic-csi/commit/bb91b1f1c3) introduced the newer API implementation; the [v1.9.5 changelog](https://github.com/democratic-csi/democratic-csi/blob/v1.9.5/CHANGELOG.md) lists TrueNAS 25.10 support.
+
+The controller image previously used the mutable `next` tag with `IfNotPresent`, which can leave different cached builds on different nodes. Use a version pin to make controller replacements predictable.
+
+The incident was resolved by updating the live Secrets to HTTPS/443, applying the image pins through Helm with chart `0.15.1`, and restarting the controllers. Both controllers recovered to `6/6 Running`. After the stuck SearXNG pod was deleted, its Deployment created a replacement that attached the existing volume and reached `1/1 Running`. If recreating a stuck pod is needed, first confirm that its Deployment manages it and the storage controllers are healthy.
+
+Keep the local manifests aligned with the live Secrets. During this incident, the local NFS manifest used an IP address while the live Secret used a hostname; applying the entire local manifest would also have changed the host.
+
+Do not delete a PVC to resolve this timeout. These storage classes use reclaim policy `Delete`, so deleting a PVC normally also deletes its backing storage. Deleting a pod preserves its PVC and data.
 
 
 
