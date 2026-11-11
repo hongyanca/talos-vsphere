@@ -263,6 +263,8 @@ def replace(role: str, node_number: int) -> None:
 
     run_govc(
         "library.deploy",
+        "-options",
+        str(Path(__file__).resolve().parent / "vmware-deploy-options.json"),
         f"{CLUSTER_NAME}/talos-{version}",
         vm_name,
     )

@@ -21,17 +21,17 @@ the latest stable Talos release from GitHub and synchronizes the Kubernetes comp
 with a specific Talos version.
 
 ```bash
-# Replace Talos version from 1.14.x to 1.14.5 on Linux
-sed -i 's/:v1\.14\.[0-9]\+/:v1.14.5/g' controlplane*.yaml worker*.yaml
-sed -i 's/v1\.14\.[0-9]\+/v1.14.5/g' vmware.sh vmware-deploy-node.sh
+# Replace Talos version from 1.14.x to 1.14.7 on Linux
+sed -i 's/:v1\.14\.[0-9]\+/:v1.14.7/g' controlplane*.yaml worker*.yaml
+sed -i 's/v1\.14\.[0-9]\+/v1.14.7/g' vmware.sh vmware-deploy-node.sh
 
-# Replace Talos version from 1.14.x to 1.14.5 on macOS
+# Replace Talos version from 1.14.x to 1.14.7 on macOS
 # Use `brew install gnu-sed` to install GNU sed
-gsed -i 's/:v1\.14\.[0-9]\+/:v1.14.5/g' controlplane*.yaml worker*.yaml
-gsed -i 's/v1\.14\.[0-9]\+/v1.14.5/g' vmware.sh vmware-deploy-node.sh
+gsed -i 's/:v1\.14\.[0-9]\+/:v1.14.7/g' controlplane*.yaml worker*.yaml
+gsed -i 's/v1\.14\.[0-9]\+/v1.14.7/g' vmware.sh vmware-deploy-node.sh
 
 # Optional: pin the Python deployment script instead of using the latest stable release
-export TALOS_VERSION=v1.14.5
+export TALOS_VERSION=v1.14.7
 
 # Replace k8s version from 1.37.x to 1.37.2 on Linux
 sed -i 's/:v1\.37\.[0-9]\+/:v1.37.2/g' controlplane*.yaml worker*.yaml
